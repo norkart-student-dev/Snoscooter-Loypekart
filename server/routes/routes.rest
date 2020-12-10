@@ -1,0 +1,16 @@
+GET http://localhost:5000/poi
+
+###
+
+GET http://localhost:3000/poi/5fd2193216ac6d38304ce3af
+
+###
+
+POST http://localhost:5000/poi
+Content-Type: application/json
+
+{
+  "name": "sentrum parkering2",
+  "type": "Parkeringsplass",
+  "geojson": "lokasjonsdata her"
+}

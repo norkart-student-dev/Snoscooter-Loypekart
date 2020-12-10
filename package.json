@@ -12,7 +12,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "client": "cd client && npm run start",
-    "server": "cd server && node server.js",
+    "server": "cd server && npm run start",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
   },
   "eslintConfig": {
