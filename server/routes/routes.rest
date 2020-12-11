@@ -14,7 +14,7 @@ Content-Type: application/json
   "type": "Parkeringsplass",
   "location": { 
     "type": "Point", 
-    "coordinates": [60, 5] 
+    "coordinates": [60.03456, 5.0843] 
     }
 }
 
