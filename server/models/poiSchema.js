@@ -1,17 +1,19 @@
 const mongoose = require('mongoose')
+console.log(require('../models/geoJsonSchema.js'))
+const { pointSchema } = require('../models/geoJsonSchema.js')
+
+
 
 const poiSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true
-  },
+  name: String,
   type: {
     type: String,
+    enum: ['Parkeringsplass'],
     required: true
   },
-  geojson: {
-    type: String,
-    required: true,
+  location: {
+    type: pointSchema.schema,
+    required: true
   }
 })
 

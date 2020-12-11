@@ -22,7 +22,7 @@ router.post('/', async (req, res) => {
   const poi = new PoI({
     name: req.body.name,
     type: req.body.type,
-    geojson: req.body.geojson
+    location: req.body.location
   })
   
   try {
@@ -41,6 +41,9 @@ router.patch('/:id', getPoi, async (req, res) => {
 
   if (req.body.type != null) {
     res.poi.type = req.body.type
+  }
+  if (req.body.type != null) {
+    res.poi.location = req.body.location
   }
   try {
     const updatedPoi = await res.poi.save()
