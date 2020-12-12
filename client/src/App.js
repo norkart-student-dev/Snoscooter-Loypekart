@@ -26,8 +26,18 @@ class App extends Component {
   }
 
   async handleLogin(username, password) {
-    const loginResponse = await this.server.login(username, password);
-    console.log(loginResponse);
+    if(username === undefined || username === null) {
+      alert("Ingen brukernavn oppgitt, prøv igjen");
+    }
+
+    else if (password === undefined || password === null) {
+      alert("Ingen passord oppgitt, prøv igjen");
+    }
+    
+    else {
+      const loginResponse = await this.server.login(username, password);
+      console.log(loginResponse);
+    }
   }
 
   toggleLoginDialog() {
@@ -46,7 +56,10 @@ class App extends Component {
         ></SideMenu>
 
         {this.state.showLogin &&
-          <LoginDialog handleLogin={this.handleLogin} hideLoginDialog={this.toggleLoginDialog}></LoginDialog>
+          <LoginDialog
+            handleLogin={this.handleLogin}
+            toggleLoginDialog={this.toggleLoginDialog}>
+          </LoginDialog>
         }
 
         <Mapview pois={this.state.pois}/>
