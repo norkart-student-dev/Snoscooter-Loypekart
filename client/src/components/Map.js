@@ -33,11 +33,8 @@ export default function Map({createPoi, editPoi, deletePoi, poi_data}){
     }
    
     return(
-        <MapContainer 
-            className='Map' 
-            center={[60.39, 5.32]} 
-            zoom={13}
-        >
+        <MapContainer className='Map' center={[60.39, 5.32]} zoom={13} zoomControl={false}>
+
             <TileLayer
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

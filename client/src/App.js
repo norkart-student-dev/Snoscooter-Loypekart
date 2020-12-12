@@ -4,25 +4,59 @@ import './App.css';
 import Map from './components/Map';
 import NewPoiDialog from './components/NewPoiDialog';
 import { UserProvider } from './Context'
+import SideMenu from './components/SideMenu';
+import LoginDialog from './components/LoginDialog';
+import ServerConnection from './ServerConnection';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       creatingPoi: null
+      currentLocation: { lat: 60.0084857, lng:11.0648648 },
+      showLogin : false,
     };
 
     this.user = {
       loggedIn: true
     }
 
+    this.server = new ServerConnection();
+    
     this.createPoi = this.createPoi.bind(this);
     this.editPoi = this.editPoi.bind(this);
     this.deletePoi = this.deletePoi.bind(this);
+    this.toggleLoginDialog = this.toggleLoginDialog.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
+
+
   }
 
   componentDidMount() {
     this.getPois().then(data => this.setState({poi_data: data}));
+  }
+
+  async handleLogin(username, password) {
+    if(username === undefined || username === null) {
+      alert("Ingen brukernavn oppgitt, prøv igjen");
+    }
+
+    else if (password === undefined || password === null) {
+      alert("Ingen passord oppgitt, prøv igjen");
+    }
+    
+    else {
+      const loginResponse = await this.server.login(username, password);
+      console.log(loginResponse);
+    }
+  }
+
+  toggleLoginDialog() {
+    let toggle = this.state.showLogin;
+    this.setState(prevState => ({
+      currentLocation : prevState.currentLocation,
+      showLogin : !toggle
+    }))
   }
 
   render(){
@@ -38,6 +72,16 @@ class App extends Component {
 
         {this.state.creatingPoi && <NewPoiDialog onDone={this.createPoi} coords={this.state.creatingPoi}/>}
         {this.state.editingPoi && <NewPoiDialog onDone={this.editPoi}/>}
+        <SideMenu
+          openLoginMenu = {this.toggleLoginDialog}
+        ></SideMenu>
+
+        {this.state.showLogin &&
+          <LoginDialog
+            handleLogin={this.handleLogin}
+            toggleLoginDialog={this.toggleLoginDialog}>
+          </LoginDialog>
+        }
       </UserProvider>
     );
   }
