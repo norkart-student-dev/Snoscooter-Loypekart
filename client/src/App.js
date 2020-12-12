@@ -62,6 +62,9 @@ class App extends Component {
   render(){
     return(
       <UserProvider value={this.user}>
+        <SideMenu
+          openLoginMenu = {this.toggleLoginDialog}
+        ></SideMenu>
         <Map 
           poi_data={this.state.poi_data} 
           createPoi={this.createPoi} 
@@ -72,9 +75,7 @@ class App extends Component {
 
         {this.state.creatingPoi && <NewPoiDialog onDone={this.createPoi} coords={this.state.creatingPoi}/>}
         {this.state.editingPoi && <NewPoiDialog onDone={this.editPoi}/>}
-        <SideMenu
-          openLoginMenu = {this.toggleLoginDialog}
-        ></SideMenu>
+
 
         {this.state.showLogin &&
           <LoginDialog

@@ -25,22 +25,11 @@
 }
 
 .SettingsIcon {
-  width: 2%;
+  width: 50px;
   padding-left: 1%;
   padding-top: 1%;
   z-index: 1001;
   position : absolute
-}
-
-.SideMenu {
-  position: absolute;
-  z-index: 1001;
-  padding-top: 1%;
-  width: 10vw;
-}
-
-.SideMenu button {
-  width : 100%;
 }
 
 .LoginDialog {
