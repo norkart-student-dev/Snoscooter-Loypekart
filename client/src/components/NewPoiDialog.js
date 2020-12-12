@@ -11,6 +11,25 @@ export default function NewPoiDialog(props){
     const onTextChange = (event) => {
       setTextValue(event.target.value);
     };
+
+    let onConfirm = null;
+
+    if(props.coords === undefined){
+        onConfirm = () => props.onDone(null, { 
+            "name": textValue, 
+            "type": typeValue,
+          })
+    } else {
+        onConfirm = () => props.onDone(null, { 
+            "name": textValue, 
+            "type": typeValue,
+            "location": { 
+                "type": "Point", 
+                "coordinates": [props.coords.lat, props.coords.lng]
+                }
+          })
+    }
+
     return(
         <div className='NewPoiDialog'>
             <div className='NewPoiDialog-inner'>
@@ -20,15 +39,8 @@ export default function NewPoiDialog(props){
                     <option value="Rasteplass">Rasteplass</option>
                 </select>
                 <button className='NewPoiDialog-button' 
-                    onClick={() => props.createPoi(null, { 
-                        "name": textValue, 
-                        "type": typeValue,
-                        "location": { 
-                            "type": "Point", 
-                            "coordinates": [props.coords.lat, props.coords.lng]
-                            }
-                      })}>Bekreft</button>
-                <button className='NewPoiDialog-button' onClick={() => props.createPoi(null)}>Avbryt</button>
+                    onClick={() => onConfirm()}>Bekreft</button>
+                <button className='NewPoiDialog-button' onClick={() => props.onDone(null)}>Avbryt</button>
             </div>
         </div>
         

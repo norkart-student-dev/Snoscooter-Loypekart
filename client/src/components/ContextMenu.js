@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Popup, useMapEvents } from 'react-leaflet';
 
 
-function ContextMarker(props) {
+function ContextMarker({createPoi}) {
     const [position, setPosition] = useState(null)
 
     const map = useMapEvents({
@@ -20,11 +20,10 @@ function ContextMarker(props) {
         }
     })
 
-  
     return position === null ? null : (
         <Popup position={position} id='poiPopup'>
             <button onClick={() => {
-                props.createPoi(position)
+                createPoi(position)
                 setPosition(null)
             }}>Nytt punkt</button>
         </Popup>

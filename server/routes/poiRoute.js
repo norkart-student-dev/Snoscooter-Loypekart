@@ -42,13 +42,13 @@ router.patch('/:id', getPoi, async (req, res) => {
   if (req.body.type != null) {
     res.poi.type = req.body.type
   }
-  if (req.body.type != null) {
+  if (req.body.location != null) {
     res.poi.location = req.body.location
   }
   try {
     const updatedPoi = await res.poi.save()
-    res.json(updatedPoi)
-  } catch {
+    res.status(201).json(updatedPoi)
+  } catch(err) {
     res.status(400).json({ message: err.message })
   }
 
@@ -58,7 +58,7 @@ router.patch('/:id', getPoi, async (req, res) => {
 router.delete('/:id', getPoi, async (req, res) => {
   try {
     await res.poi.remove()
-    res.json({ message: 'Deleted This Point of Interest' })
+    res.status(201).json({ message: 'Deleted This Point of Interest' })
   } catch(err) {
     res.status(500).json({ message: err.message })
   }
