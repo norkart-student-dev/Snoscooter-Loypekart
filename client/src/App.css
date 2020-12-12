@@ -9,17 +9,6 @@
   height: 100vh;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -63,6 +52,34 @@
   background-color: rgba(128,128,128,0.5);
   z-index: 1000;
 }
+ 
+.NewPoiDialog {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(128,128,128,0.5);
+  z-index: 1000;
+}
+
+.NewPoiDialog-inner {
+  position: fixed;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%,-50%);
+  height: 500px;
+  width: 400px;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: left;
+  padding: 10px;
+}
 
 .LoginDialog-inner {
   position: fixed;
@@ -82,6 +99,16 @@
   padding: 10px;
 }
 
+.NewPoiDialog-items {
+  width: 250px;
+  margin: 10px;
+}
+
+.NewPoiDialog-button {
+  width: 100px;
+  margin-top: 20px;
+}
+
 .LoginDialog-input {
   width :125px;
   margin-top: 5px;
@@ -92,11 +119,4 @@
   margin-top: 5px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+
