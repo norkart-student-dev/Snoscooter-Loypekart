@@ -64,7 +64,7 @@ router.delete('/:id', getPoi, async (req, res) => {
   }
 })
 
-
+// Middleman function for finding poi by id
 async function getPoi(req, res, next) {
   try {
     poi = await PoI.findById(req.params.id)

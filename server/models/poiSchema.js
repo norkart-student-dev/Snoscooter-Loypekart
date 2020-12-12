@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-console.log(require('../models/geoJsonSchema.js'))
 const { pointSchema } = require('../models/geoJsonSchema.js')
 
 
@@ -8,7 +7,7 @@ const poiSchema = new mongoose.Schema({
   name: String,
   type: {
     type: String,
-    enum: ['Parkeringsplass'],
+    enum: ['Parkeringsplass', 'Rasteplass'],
     required: true
   },
   location: {
