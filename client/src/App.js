@@ -12,7 +12,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      creatingPoi: null
+      creatingPoi: null,
       currentLocation: { lat: 60.0084857, lng:11.0648648 },
       showLogin : false,
     };
