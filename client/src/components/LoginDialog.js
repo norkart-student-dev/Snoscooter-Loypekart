@@ -13,7 +13,7 @@ export default function LoginDialog(props){
     };
 
     return(
-        <div className='LoginiDialog'>
+        <div className='LoginDialog'>
             <div className='LoginDialog-inner'>
                 <label style={{fontWeight : "Bold"}}>Login</label>
                 <label style={{textDecoration : "Underline", color : "red"}}>Kun for administratorer</label>
