@@ -7,6 +7,7 @@
   },
   "scripts": {
     "install_all": "npm i && cd client && npm i && cd ../server && npm i",
+    "start": "cd server && node server.js",
     "client": "cd client && npm run start",
     "server": "cd server && npm run start",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
