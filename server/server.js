@@ -4,7 +4,7 @@ const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 5000;
-const DATABASE_URL='mongodb://localhost/subscribers'
+const DATABASE_URL= process.env.MONGODB_URI || 'mongodb://localhost/subscribers'
 
 
 mongoose.connect(DATABASE_URL, { useNewUrlParser: true })
