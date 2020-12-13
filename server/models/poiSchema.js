@@ -7,7 +7,7 @@ const poiSchema = new mongoose.Schema({
   name: String,
   type: {
     type: String,
-    enum: ['Parkeringsplass', 'Rasteplass'],
+    enum: ['Parkeringsplass', 'Rasteplass', 'Rasteplass med WC', 'Matservering', 'Teltplass'],
     required: true
   },
   location: {

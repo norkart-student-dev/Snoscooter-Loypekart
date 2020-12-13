@@ -37,6 +37,9 @@ export default function NewPoiDialog(props){
                 <select className='NewPoiDialog-items' value={typeValue} onChange={onTypeChange}>
                     <option value="Parkeringsplass">Parkeringsplass</option>
                     <option value="Rasteplass">Rasteplass</option>
+                    <option value="Rasteplass med WC">Rasteplass med WC</option>
+                    <option value="Matservering">Matservering</option>
+                    <option value="Teltplass">Teltplass</option>
                 </select>
                 <button className='NewPoiDialog-button' 
                     onClick={() => onConfirm()}>Bekreft</button>

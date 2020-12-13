@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { MapContainer, TileLayer, Marker, Popup} from 'react-leaflet';
-import { parkingIcon, restStopIcon, defaultIcon } from './Icons';
+import { parkingIcon, restStopIcon, reststopWcIcon, tentIcon, foodStopIcon, defaultIcon } from './Icons';
 import 'leaflet/dist/leaflet.css';
 import ContextMenu from './ContextMenu';
 import UserContext from '../Context';
@@ -16,6 +16,12 @@ export default function Map({createPoi, editPoi, deletePoi, poi_data}){
             icon = parkingIcon
         } else if(item.type === 'Rasteplass'){
             icon = restStopIcon
+        } else if(item.type === 'Rasteplass med WC'){
+            icon = reststopWcIcon
+        } else if(item.type === 'Matservering'){
+            icon = foodStopIcon
+        } else if(item.type === 'Teltplass'){
+            icon = tentIcon
         } else {
             icon = defaultIcon
         }

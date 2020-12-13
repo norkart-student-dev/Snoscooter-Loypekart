@@ -1,7 +1,9 @@
 import Leaflet from 'leaflet';
 import ParkingImage from '../assets/Parkering.jpg';
 import ReststopImage from '../assets/Rasteplass.jpg';
-
+import TentImage from '../assets/Teltplass.jpg';
+import FoodstopImage from '../assets/Spisested.jpg';
+import ReststopWcImage from '../assets/Rasteplass_wc.jpg';
 
 
 const parkingIcon = Leaflet.icon({
@@ -13,6 +15,27 @@ const parkingIcon = Leaflet.icon({
 
 const restStopIcon = Leaflet.icon({
     iconUrl: ReststopImage,
+    iconSize:     [30, 30], // size of the icon
+    iconAnchor:   [15, 15], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+});
+
+const tentIcon = Leaflet.icon({
+    iconUrl: TentImage,
+    iconSize:     [30, 30], // size of the icon
+    iconAnchor:   [15, 15], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+});
+
+const foodStopIcon = Leaflet.icon({
+    iconUrl: FoodstopImage,
+    iconSize:     [30, 30], // size of the icon
+    iconAnchor:   [15, 15], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+});
+
+const reststopWcIcon = Leaflet.icon({
+    iconUrl: ReststopWcImage,
     iconSize:     [30, 30], // size of the icon
     iconAnchor:   [15, 15], // point of the icon which will correspond to marker's location
     popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
@@ -40,5 +63,8 @@ const defaultIcon = Leaflet.divIcon({
 export {
     parkingIcon,
     restStopIcon,
+    reststopWcIcon,
+    tentIcon,
+    foodStopIcon,
     defaultIcon
 }
