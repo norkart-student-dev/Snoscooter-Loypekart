@@ -9,7 +9,8 @@
     "install_all": "npm i && cd client && npm i && cd ../server && npm i",
     "client": "cd client && npm run start",
     "server": "cd server && npm run start",
-    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
+    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
+    "heroku-postbuild": "cd server && npm install && cd ../client && npm install && npm run build"
   },
   "eslintConfig": {
     "extends": [
