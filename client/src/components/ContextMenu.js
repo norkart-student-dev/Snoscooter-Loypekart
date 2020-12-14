@@ -5,7 +5,7 @@ import { Popup, useMapEvents } from 'react-leaflet';
 function ContextMarker({createPoi}) {
     const [position, setPosition] = useState(null)
 
-    const map = useMapEvents({
+    useMapEvents({
         click(e) {
             if(position !== null){
                 setPosition(null)
