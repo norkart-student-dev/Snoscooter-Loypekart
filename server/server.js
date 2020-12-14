@@ -17,6 +17,9 @@ app.use(express.json())
 const poiRouter = require('./routes/poiRoute')
 app.use('/poi', poiRouter)
 
+const trackRouter = require('./routes/wfsRoute')
+app.use('/tracks', trackRouter)
+
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
 if (process.env.NODE_ENV === 'production') {
