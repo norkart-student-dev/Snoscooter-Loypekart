@@ -1,40 +1,45 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 
-export default function NewPoiDialog(props){
-    const [textValue, setTextValue] = useState('');
-    const [typeValue, setTypeValue] = useState('Parkeringsplass');
+export default function NewPoiDialog({coords, onDone, selectedPoi}){
+    const [name, setName] = useState('');
+    const [type, setType] = useState('Parkeringsplass')
 
-    const onTypeChange = (event) => {
-        setTypeValue(event.target.value);
-    };
+    useEffect(() => {
+        setName(selectedPoi.name)
+        setType(selectedPoi.type)
+    }, [selectedPoi])
 
-    const onTextChange = (event) => {
-      setTextValue(event.target.value);
-    };
+    const nameOnchange = (event) => {
+        setName(event.target.value)
+    }
+    const typeOnchange = (event) => {
+        setType(event.target.value)
+    }
+
 
     let onConfirm = null;
 
-    if(props.coords === undefined){
-        onConfirm = () => props.onDone(null, { 
-            "name": textValue, 
-            "type": typeValue,
+    if(coords === undefined){
+        onConfirm = () => onDone(null, { 
+            "name": name, 
+            "type": type,
           })
     } else {
-        onConfirm = () => props.onDone(null, { 
-            "name": textValue, 
-            "type": typeValue,
+        onConfirm = () => onDone(null, { 
+            "name": name, 
+            "type": type,
             "location": { 
                 "type": "Point", 
-                "coordinates": [props.coords.lat, props.coords.lng]
-                }
-          })
+                "coordinates": [coords.lat, coords.lng]
+            }
+        })
     }
 
     return(
         <div className='NewPoiDialog'>
             <div className='NewPoiDialog-inner'>
-                <input className='NewPoiDialog-items' type='text' placeholder='Navn' value={textValue} onChange={onTextChange}></input>
-                <select className='NewPoiDialog-items' value={typeValue} onChange={onTypeChange}>
+                <input className='NewPoiDialog-items' type='text' placeholder='Navn' value={name} onChange={nameOnchange}></input>
+                <select className='NewPoiDialog-items' value={type} onChange={typeOnchange}>
                     <option value="Parkeringsplass">Parkeringsplass</option>
                     <option value="Rasteplass">Rasteplass</option>
                     <option value="Rasteplass med WC">Rasteplass med WC</option>
@@ -43,7 +48,7 @@ export default function NewPoiDialog(props){
                 </select>
                 <button className='NewPoiDialog-button' 
                     onClick={() => onConfirm()}>Bekreft</button>
-                <button className='NewPoiDialog-button' onClick={() => props.onDone(null)}>Avbryt</button>
+                <button className='NewPoiDialog-button' onClick={() => onDone(null)}>Avbryt</button>
             </div>
         </div>
         

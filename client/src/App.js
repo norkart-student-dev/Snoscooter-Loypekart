@@ -14,7 +14,8 @@ class App extends Component {
     this.state = {
       creatingPoi: null,
       currentLocation: { lat: 60.0084857, lng:11.0648648 },
-      showLogin : false,
+      showLogin: false,
+      poi_data: []
     };
 
     this.user = {
@@ -73,8 +74,16 @@ class App extends Component {
           deletePoi={this.deletePoi}
         />
 
-        {this.state.creatingPoi && <NewPoiDialog onDone={this.createPoi} coords={this.state.creatingPoi}/>}
-        {this.state.editingPoi && <NewPoiDialog onDone={this.editPoi}/>}
+        {this.state.creatingPoi && <NewPoiDialog 
+          onDone={this.createPoi} 
+          coords={this.state.creatingPoi}
+          selectedPoi={{name:'', type:'Parkeringsplass'}}
+        />}
+
+        {this.state.editingPoi && <NewPoiDialog 
+          onDone={this.editPoi} 
+          selectedPoi={this.state.poi_data.filter((v) => (v._id===this.state.editingPoi))[0]}
+        />}
 
 
         {this.state.showLogin &&
