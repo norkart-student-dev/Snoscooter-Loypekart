@@ -14,13 +14,16 @@ class App extends Component {
     this.state = {
       creatingPoi: null,
       currentLocation: { lat: 60.0084857, lng:11.0648648 },
-      showLogin: false,
+
+      showLogin : false,
+      currentUser : "",
       poi_data: [],
       track_data: []
+
     };
 
     this.user = {
-      loggedIn: true
+      loggedIn: false //should default to false in production version!
     }
 
     this.server = new ServerConnection();
@@ -30,8 +33,6 @@ class App extends Component {
     this.deletePoi = this.deletePoi.bind(this);
     this.toggleLoginDialog = this.toggleLoginDialog.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
-
-
   }
 
   componentDidMount() {
@@ -40,26 +41,41 @@ class App extends Component {
   }
 
   async handleLogin(username, password) {
-    if(username === undefined || username === null) {
+    if(username === undefined || username === null || username ==="") {
       alert("Ingen brukernavn oppgitt, prøv igjen");
     }
 
-    else if (password === undefined || password === null) {
+    else if (password === undefined || password === null || password ==="") {
       alert("Ingen passord oppgitt, prøv igjen");
     }
     
     else {
       const loginResponse = await this.server.login(username, password);
-      console.log(loginResponse);
+      if(loginResponse.data === true) {
+        
+        this.setState(prevState => ({
+          creatingPoi : prevState.creatingPoi,
+          currentLocation : prevState.currentLocation,
+          showLogin : false,
+          currentUser : username
+        }));
+      } else {
+        alert("Feil brukernavn eller passord")
+      }
+      this.user.loggedIn = loginResponse.data;
     }
   }
 
   toggleLoginDialog() {
     let toggle = this.state.showLogin;
-    this.setState(prevState => ({
-      currentLocation : prevState.currentLocation,
-      showLogin : !toggle
-    }))
+    if(this.user.loggedIn === false) {
+      this.setState(prevState => ({
+        currentLocation : prevState.currentLocation,
+        showLogin : !toggle
+      }));
+    } else {
+      alert("Du er allerede logget inn som: " + this.state.currentUser)
+    }
   }
 
   render(){
@@ -67,6 +83,7 @@ class App extends Component {
       <UserProvider value={this.user}>
         <SideMenu
           openLoginMenu = {this.toggleLoginDialog}
+          currentUser = {this.state.currentUser}
         ></SideMenu>
         <Map 
           poi_data={this.state.poi_data}

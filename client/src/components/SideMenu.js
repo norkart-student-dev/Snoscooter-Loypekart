@@ -6,11 +6,16 @@ class SideMenu extends Component {
         super(props);
     }
 
+
+    component
     render() {
-        return (<img
-                src={PadlockImg}
-                className="SettingsIcon"
-                onClick={() => this.props.openLoginMenu()}/>)
+        return (
+            <div className="SideDiv">
+                <img
+                    src={PadlockImg}
+                    onClick={() => this.props.openLoginMenu()}/>
+            </div>
+        )
     }
 }
 
