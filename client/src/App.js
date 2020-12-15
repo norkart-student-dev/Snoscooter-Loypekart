@@ -111,6 +111,7 @@ class App extends Component {
     const res = await axios.get('/tracks');
 
     let data = res.data;
+    console.log(data)
     return(data);
   }
 
