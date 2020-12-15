@@ -20,6 +20,9 @@ app.use('/poi', poiRouter)
 const QMSRouter = require('./routes/QMSRoute');
 app.use('/qms', QMSRouter);
 
+const trackRouter = require('./routes/wfsRoute')
+app.use('/tracks', trackRouter)
+
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
 if (process.env.NODE_ENV === 'production') {

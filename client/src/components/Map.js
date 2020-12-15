@@ -1,45 +1,16 @@
 import React, { useContext } from 'react';
-import { MapContainer, TileLayer, Marker, Popup} from 'react-leaflet';
-import { parkingIcon, restStopIcon, reststopWcIcon, tentIcon, foodStopIcon, defaultIcon } from './Icons';
+import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import ContextMenu from './ContextMenu';
 import UserContext from '../Context';
+import PoiMarker from './PoiMarker';
+import TrackMarker from './TrackMarker';
 
-export default function Map({createPoi, editPoi, deletePoi, poi_data}){
+export default function Map({createPoi, editPoi, deletePoi, poi_data, track_data}){
     const user = useContext(UserContext)
-
-    // Returns the relevant marker for the item given 
-    const poiMarker = (item) => {
-        
-        let icon = null
-        if(item.type === 'Parkeringsplass'){
-            icon = parkingIcon
-        } else if(item.type === 'Rasteplass'){
-            icon = restStopIcon
-        } else if(item.type === 'Rasteplass med WC'){
-            icon = reststopWcIcon
-        } else if(item.type === 'Matservering'){
-            icon = foodStopIcon
-        } else if(item.type === 'Teltplass'){
-            icon = tentIcon
-        } else {
-            icon = defaultIcon
-        }
-
-        return(
-            <Marker position={item.location.coordinates} key={item._id} icon={icon}>
-                <Popup className='PoiInfo'>
-                    <p>Navn: {item.name} <br/>Type: {item.type}</p>
-                    {user.loggedIn && <button onClick={() => editPoi(item._id)}>Endre</button>}
-                    {user.loggedIn && <button onClick={() => { if (window.confirm('Er du sikker på at du vil slette dette punktet?')) deletePoi(item._id)}}>Slett</button>}
-
-                </Popup>
-            </Marker>
-        );
-    }
    
     return(
-        <MapContainer className='Map' center={[60.39, 5.32]} zoom={13} zoomControl={false}>
+        <MapContainer className='Map' center={[65.43662791576793, 13.401348570518797]} zoom={8} zoomControl={false}>
 
             <TileLayer
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -48,7 +19,22 @@ export default function Map({createPoi, editPoi, deletePoi, poi_data}){
 
             {user.loggedIn && <ContextMenu createPoi={createPoi}/>}
 
-            {poi_data !== undefined && poi_data.map((item, index) => (poiMarker(item)))}
+            {poi_data !== undefined && 
+                poi_data.map((item, index) => (
+                    <PoiMarker 
+                        key={item._id} 
+                        item={item} 
+                        editPoi={editPoi} 
+                        deletePoi={deletePoi}
+                    />
+                ))
+            }
+
+            {track_data.features !== undefined &&
+                track_data.features.map((item, index) => (
+                    <TrackMarker item={item}/>
+                ))  
+            }
         </MapContainer>
     )
 }

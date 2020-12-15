@@ -14,8 +14,12 @@ class App extends Component {
     this.state = {
       creatingPoi: null,
       currentLocation: { lat: 60.0084857, lng:11.0648648 },
+
       showLogin : false,
       currentUser : "",
+      poi_data: [],
+      track_data: []
+
     };
 
     this.user = {
@@ -33,6 +37,7 @@ class App extends Component {
 
   componentDidMount() {
     this.getPois().then(data => this.setState({poi_data: data}));
+    this.getTracks().then(data => this.setState({track_data: data}));
   }
 
   async handleLogin(username, password) {
@@ -81,15 +86,24 @@ class App extends Component {
           currentUser = {this.state.currentUser}
         ></SideMenu>
         <Map 
-          poi_data={this.state.poi_data} 
+          poi_data={this.state.poi_data}
+          track_data={this.state.track_data} 
           createPoi={this.createPoi} 
           creatingPoi={this.state.creatingPoi} 
           editPoi={this.editPoi}
           deletePoi={this.deletePoi}
         />
 
-        {this.state.creatingPoi && <NewPoiDialog onDone={this.createPoi} coords={this.state.creatingPoi}/>}
-        {this.state.editingPoi && <NewPoiDialog onDone={this.editPoi}/>}
+        {this.state.creatingPoi && <NewPoiDialog 
+          onDone={this.createPoi} 
+          coords={this.state.creatingPoi}
+          selectedPoi={{name:'', type:'Parkeringsplass'}}
+        />}
+
+        {this.state.editingPoi && <NewPoiDialog 
+          onDone={this.editPoi} 
+          selectedPoi={this.state.poi_data.filter((v) => (v._id===this.state.editingPoi))[0]}
+        />}
 
 
         {this.state.showLogin &&
@@ -105,6 +119,13 @@ class App extends Component {
   // Request a list of all PoI's from the backend
   async getPois(){
     const res = await axios.get('/poi');
+
+    let data = res.data;
+    return(data);
+  }
+
+  async getTracks(){
+    const res = await axios.get('/tracks');
 
     let data = res.data;
     return(data);
