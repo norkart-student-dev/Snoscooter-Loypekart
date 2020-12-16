@@ -39,7 +39,10 @@ class App extends Component {
   componentDidMount() {
     this.getPois().then(data => this.setState({poi_data: data}));
     this.getTracks().then(data => this.setState({track_data: data}));
+    this.testWFS()
   }
+
+
 
   async handleLogin(username, password) {
     if(username === undefined || username === null || username ==="") {
@@ -128,10 +131,20 @@ class App extends Component {
 
   // Request a list of all PoI's from the backend
   async getPois(){
-    const res = await axios.get('/poi');
+    try{
+      const res = await axios.get('/poi');
 
-    let data = res.data;
-    return(data);
+      let data = res.data;
+      return(data);
+    }
+    catch(err) {
+      // console.log(err);
+    }
+  }
+
+  async testWFS() {
+    const res = await axios.get('/tracks');
+    console.log(res);
   }
 
   async getTracks(){
