@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const axios = require('axios')
-
+const Track = require('../models/trackSchema')
 const wfs_scooter_url = "http://www.webatlas.no/wms-qms11_vafelt_wfs/?SERVICE=WFS&REQUEST=GetFeature&typeNames=QMS_VA_FELT:SCOOTERLOYPER_1824"
 const output_format = "json" // default to json, also supports GML and XML
 
@@ -15,9 +15,7 @@ router.get('/', async (req, res) => {
       }
       let response = await axios(config);
       console.log(response);
-      res.send(response.data)
 
-      //console.log(testData)
       const tracks = response.data.features.map((item,index) => (
         new Track({
           _id: item.properties.LOKALID,

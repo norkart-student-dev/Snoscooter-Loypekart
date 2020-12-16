@@ -39,7 +39,7 @@ class App extends Component {
   componentDidMount() {
     this.getPois().then(data => this.setState({poi_data: data}));
     this.getTracks().then(data => this.setState({track_data: data}));
-    this.testWFS()
+    // this.testWFS()
   }
 
 
@@ -140,11 +140,6 @@ class App extends Component {
     catch(err) {
       // console.log(err);
     }
-  }
-
-  async testWFS() {
-    const res = await axios.get('/tracks');
-    console.log(res);
   }
 
   async getTracks(){
