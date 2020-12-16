@@ -6,7 +6,7 @@ import UserContext from '../Context';
 import PoiMarker from './PoiMarker';
 import TrackMarker from './TrackMarker';
 
-export default function Map({createPoi, editPoi, deletePoi, poi_data, editTrack, track_data}){
+export default React.memo(function Map({createPoi, editPoi, deletePoi, poi_data, editTrack, track_data}){
     const user = useContext(UserContext)
    
     return(
@@ -41,4 +41,4 @@ export default function Map({createPoi, editPoi, deletePoi, poi_data, editTrack,
             }
         </MapContainer>
     )
-}
+});
