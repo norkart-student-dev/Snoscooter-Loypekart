@@ -69,7 +69,7 @@ async function getPoi(req, res, next) {
   try {
     poi = await PoI.findById(req.params.id)
     if (poi == null) {
-      return res.status(404).json({ message: 'Cant find subscriber'})
+      return res.status(404).json({ message: 'Cant find poi'})
     }
   } catch(err){
     return res.status(500).json({ message: err.message })

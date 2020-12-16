@@ -6,7 +6,7 @@ import UserContext from '../Context';
 import PoiMarker from './PoiMarker';
 import TrackMarker from './TrackMarker';
 
-export default function Map({createPoi, editPoi, deletePoi, poi_data, track_data}){
+export default function Map({createPoi, editPoi, deletePoi, poi_data, editTrack, track_data}){
     const user = useContext(UserContext)
    
     return(
@@ -30,9 +30,13 @@ export default function Map({createPoi, editPoi, deletePoi, poi_data, track_data
                 ))
             }
 
-            {track_data.features !== undefined &&
-                track_data.features.map((item, index) => (
-                    <TrackMarker item={item}/>
+            {track_data.length !== 0 &&
+                track_data.map((item, index) => (
+                    <TrackMarker
+                        key={item._id}
+                        item={item}
+                        editTrack={editTrack}
+                    />
                 ))  
             }
         </MapContainer>

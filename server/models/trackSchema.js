@@ -12,7 +12,10 @@ const trackSchema = new mongoose.Schema({
   },
   properties: {
     type: Object,
-    required: true
+    required: true,
+    MIDL_STENGT:{
+      type:Boolean
+    }
   },
   geometry: {
     type: polyLineSchema.schema,

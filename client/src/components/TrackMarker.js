@@ -4,7 +4,7 @@ import proj4 from 'proj4';
 import UserContext from '../Context';
     
     // draws the relevant track for the item given 
-    export default function TrackMarker({item}) {
+    export default function TrackMarker({item, editTrack}) {
         const user = useContext(UserContext)
 
         //TODO Something is wrong here
@@ -16,9 +16,14 @@ import UserContext from '../Context';
 
         coordinates = coordinates.map((item,index) => ([item[1], item[0]]))
 
+        let pathOptions = {color:'green', weight: 7, smoothFactor:0.2}
+        if(item.properties.MIDL_STENGT === true){
+            pathOptions.color ='red'
+        }
+
         useMapEvents({
             popupopen(e) {
-                if(e.popup.options.id === item.properties.q_persistent_id){
+                if(e.popup.options.id === item._id){
                     e.popup._source.setStyle({
                         color: 'blue'
                     });
@@ -26,20 +31,21 @@ import UserContext from '../Context';
             },
 
             popupclose(e) {
-                if(e.popup.options.id === item.properties.q_persistent_id){
+                if(e.popup.options.id === item._id){
                     e.popup._source.setStyle({
-                        color: 'green'
+                        color: pathOptions.color
                     });
                 }
             }
         })
 
 
+
         return(
-            <Polyline className='trackLine' pathOptions={{color:'green', weight: 7, smoothFactor: 0.1}} positions={coordinates}>
-                <Popup className='trackInfo' id={item.properties.q_persistent_id}>
+            <Polyline className='trackLine' pathOptions={pathOptions} positions={coordinates}>
+                <Popup className='trackInfo' id={item._id}>
                     <p>Navn: {item.properties.NAVN}</p>
-                    {user.loggedIn && <button>Endre</button>}
+                    {user.loggedIn && <button onClick={() => {editTrack(item._id)}}>Endre</button>}
                     {user.loggedIn && <button>Split her</button>}
                 </Popup>
             </Polyline>
