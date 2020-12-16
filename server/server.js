@@ -18,7 +18,7 @@ app.use(express.json())
 const poiRouter = require('./routes/poiRoute')
 app.use('/poi', poiRouter)
 
-const QMSRouter = require('./routes/QMSRoute');
+const QMSRouter = require('./routes/QMSroute');
 app.use('/qms', QMSRouter);
 
 const trackRouter = require('./routes/wfsRoute')
