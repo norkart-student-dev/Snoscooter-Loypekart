@@ -18,8 +18,7 @@ class App extends Component {
       showLogin : false,
       currentUser : "",
       poi_data: [],
-      track_data: []
-
+      track_data: [],
     };
 
     this.user = {
@@ -63,6 +62,8 @@ class App extends Component {
         alert("Feil brukernavn eller passord")
       }
       this.user.loggedIn = loginResponse.data;
+      this.setState({}) //don't remove this: part of performance bugfix issue#21, required to allow contextmenu popup to appear
+      console.log(this.user.loggedIn);
     }
   }
 
