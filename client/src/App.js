@@ -3,6 +3,7 @@ import axios from 'axios';
 import './App.css';
 import Map from './components/Map';
 import NewPoiDialog from './components/NewPoiDialog';
+import TrackDialog from './components/TrackDialog'
 import { UserProvider } from './Context'
 import SideMenu from './components/SideMenu';
 import LoginDialog from './components/LoginDialog';
@@ -18,8 +19,7 @@ class App extends Component {
       showLogin : false,
       currentUser : "",
       poi_data: [],
-      track_data: []
-
+      track_data: [],
     };
 
     this.user = {
@@ -30,6 +30,7 @@ class App extends Component {
     
     this.createPoi = this.createPoi.bind(this);
     this.editPoi = this.editPoi.bind(this);
+    this.editTrack = this.editTrack.bind(this);
     this.deletePoi = this.deletePoi.bind(this);
     this.toggleLoginDialog = this.toggleLoginDialog.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
@@ -66,6 +67,8 @@ class App extends Component {
         alert("Feil brukernavn eller passord")
       }
       this.user.loggedIn = loginResponse.data;
+      this.setState({}) //don't remove this: part of performance bugfix issue#21, required to allow contextmenu popup to appear
+      console.log(this.user.loggedIn);
     }
   }
 
@@ -95,6 +98,7 @@ class App extends Component {
           creatingPoi={this.state.creatingPoi} 
           editPoi={this.editPoi}
           deletePoi={this.deletePoi}
+          editTrack={this.editTrack}
         />
 
         {this.state.creatingPoi && <NewPoiDialog 
@@ -107,6 +111,12 @@ class App extends Component {
           onDone={this.editPoi} 
           selectedPoi={this.state.poi_data.filter((v) => (v._id===this.state.editingPoi))[0]}
         />}
+
+        {this.state.editingTrack && 
+          <TrackDialog
+            onDone={this.editTrack}
+            selectedTrack={this.selectedTrack}
+          />}
 
 
         {this.state.showLogin &&
@@ -178,6 +188,25 @@ class App extends Component {
       if(res.status === 201){
         const data = await this.getPois();
         this.setState({poi_data: data})
+      }
+    }
+  }
+
+  // Value is either null or the id of the track that was clicked
+  async editTrack(value, data){
+    if (value !== null){
+      this.setState({
+        editingTrack: value,
+        selectedTrack: value})
+    } else {
+      this.setState({editingTrack: value})
+    }
+
+    if(data !== undefined){
+      const res = await axios.patch('/tracks/' + this.state.selectedTrack, data);
+      if(res.status === 201){
+        const data = await this.getTracks();
+        this.setState({track_data: data})
       }
     }
   }
