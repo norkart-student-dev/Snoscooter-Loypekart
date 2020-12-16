@@ -4,7 +4,10 @@ const { polyLineSchema } = require('../models/geoJsonSchema.js')
 
 
 const trackSchema = new mongoose.Schema({
-  _id: String,
+  _id:{
+    type: String,
+    required: true
+  },
   type: {
       type: String,
       enum: ['Feature'],
