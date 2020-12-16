@@ -2,6 +2,10 @@ GET http://localhost:5000/poi
 
 ###
 
+GET http://localhost:5000/tracks
+
+###
+
 GET http://localhost:5000/poi/5fd2193216ac6d38304ce3af
 
 ###
