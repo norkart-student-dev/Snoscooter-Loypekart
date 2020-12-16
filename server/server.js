@@ -4,7 +4,8 @@ const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 5000;
-const DATABASE_URL= process.env.MONGODB_URI || "mongodb+srv://bjosor:loypekart@cluster0.kyhik.mongodb.net";
+const DATABASE_URL= process.env.MONGODB_URI || "mongodb+srv://bjosor:loypekart@cluster0.kyhik.mongodb.net/loypekartdb?retryWrites=true&w=majority";
+                                            
 
 
 mongoose.connect(DATABASE_URL, { useNewUrlParser: true })
