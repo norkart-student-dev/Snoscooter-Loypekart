@@ -1,7 +1,4 @@
 const mongoose = require('mongoose')
-const { polyLineSchema } = require('../models/geoJsonSchema.js')
-
-
 
 const trackSchema = new mongoose.Schema({
   _id:{
@@ -21,8 +18,15 @@ const trackSchema = new mongoose.Schema({
     }
   },
   geometry: {
-    type: polyLineSchema.schema,
-    required: true
+    type: {
+      type: String,
+      enum: ['LineString'],
+      required: true
+    },
+    coordinates: {
+      type: [[Number]], // Array of arrays of arrays of numbers
+      required: true
+    }
   }
   
 })

@@ -8,6 +8,7 @@ import { UserProvider } from './Context'
 import SideMenu from './components/SideMenu';
 import LoginDialog from './components/LoginDialog';
 import ServerConnection from './ServerConnection';
+import proj4 from 'proj4';
 
 class App extends Component {
   constructor(props) {
@@ -31,6 +32,7 @@ class App extends Component {
     this.createPoi = this.createPoi.bind(this);
     this.editPoi = this.editPoi.bind(this);
     this.editTrack = this.editTrack.bind(this);
+    this.splitTrack = this.splitTrack.bind(this);
     this.deletePoi = this.deletePoi.bind(this);
     this.toggleLoginDialog = this.toggleLoginDialog.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
@@ -98,6 +100,7 @@ class App extends Component {
           editPoi={this.editPoi}
           deletePoi={this.deletePoi}
           editTrack={this.editTrack}
+          splitTrack={this.splitTrack}
         />
 
         {this.state.creatingPoi && <NewPoiDialog 
@@ -203,6 +206,59 @@ class App extends Component {
         this.setState({track_data: data})
       }
     }
+  }
+
+  async splitTrack(item, coords){
+    let current = null;
+
+    item.geometry.coordinates.forEach(element => {
+      let converted = proj4(
+        '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', 
+        '+proj=longlat +datum=WGS84 +no_defs ', 
+        element);
+      converted = [converted[1], converted[0]]
+      let convertedCurr = proj4(
+        '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', 
+        '+proj=longlat +datum=WGS84 +no_defs ', 
+        current);
+        convertedCurr = [convertedCurr[1], convertedCurr[0]]
+      if(current === null){
+        current = element
+      } else if(this.calcCrow(converted[0], converted[1], coords.lat, coords.lng) < this.calcCrow(convertedCurr[0], convertedCurr[1], coords.lat, coords.lng)) {
+        current = element
+      }
+      
+    });
+
+    
+
+    const res = await axios.patch('/tracks/split/' + item._id + '/' + current)
+    console.log(res.data)
+    const data = await this.getTracks();
+    this.setState({track_data: data})
+  }
+
+  //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
+  calcCrow(lat1, lon1, lat2, lon2) 
+  {
+    console.log(lat1, lon1, lat2, lon2)
+    var R = 6371; // km
+    var dLat = this.toRad(lat2-lat1);
+    var dLon = this.toRad(lon2-lon1);
+    var lat1 = this.toRad(lat1);
+    var lat2 = this.toRad(lat2);
+
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    var d = R * c;
+    return d;
+  }
+
+  // Converts numeric degrees to radians
+  toRad(Value) 
+  {
+      return Value * Math.PI / 180;
   }
 }
 

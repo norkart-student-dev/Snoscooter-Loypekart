@@ -1,11 +1,19 @@
-import React, {useContext} from 'react';
+import React, {useState, useContext} from 'react';
 import { Popup, Polyline, useMapEvents } from 'react-leaflet';
 import proj4 from 'proj4';
 import UserContext from '../Context';
+import TrackmarkerPopup from './TrackMarkerPopup';
     
     // draws the relevant track for the item given 
-    export default function TrackMarker({item, editTrack}) {
+    export default function TrackMarker({item, editTrack, splitTrack}) {
         const user = useContext(UserContext)
+        const [position, setPosition] = useState(null)
+        const popup = React.createRef()
+
+        const closePopup = () => {
+            console.log(popup.current._closeButton.click())
+            //popup.current.leafletElement.options.leaflet.map.closePopup();
+        }
 
         //TODO Something is wrong here
         let coordinates = item.geometry.coordinates.map((item,index) => ([item[0], item[1]]))
@@ -21,12 +29,15 @@ import UserContext from '../Context';
             pathOptions.color ='red'
         }
 
+        let coords = null;
+
         useMapEvents({
             popupopen(e) {
                 if(e.popup.options.id === item._id){
                     e.popup._source.setStyle({
                         color: 'blue'
                     });
+                    coords = e.popup._latlng
                 }
             },
 
@@ -39,14 +50,18 @@ import UserContext from '../Context';
             }
         })
 
-
-
         return(
             <Polyline className='trackLine' pathOptions={pathOptions} positions={coordinates}>
-                <Popup className='trackInfo' id={item._id}>
-                    <p>Navn: {item.properties.NAVN}</p>
-                    {user.loggedIn && <button onClick={() => {editTrack(item._id)}}>Endre</button>}
-                    {user.loggedIn && <button>Split her</button>}
+                <Popup className='trackInfo' id={item._id} position={position} ref={popup}>
+                    <p>Navn: {item._id}</p>
+                    {user.loggedIn && <button onClick={() => {
+                        editTrack(item._id); 
+                        closePopup(); 
+                    }}>Endre</button>}
+                    {user.loggedIn && <button onClick={() => {
+                        splitTrack(item, coords); 
+                        closePopup();
+                    }}>Split her</button>}
                 </Popup>
             </Polyline>
         );

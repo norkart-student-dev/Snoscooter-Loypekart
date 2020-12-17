@@ -35,3 +35,7 @@ Content-Type: application/json
 ###
 
 DELETE http://localhost:5000/poi/5fd4ac5ed095e62640ef3695
+
+###
+
+DELETE http://localhost:5000/tracks
