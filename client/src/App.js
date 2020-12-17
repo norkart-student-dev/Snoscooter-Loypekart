@@ -23,7 +23,7 @@ class App extends Component {
     };
 
     this.user = {
-      loggedIn: false //should default to false in production version!
+      loggedIn: true //should default to false in production version!
     }
 
     this.server = new ServerConnection();
@@ -39,7 +39,6 @@ class App extends Component {
   componentDidMount() {
     this.getPois().then(data => this.setState({poi_data: data}));
     this.getTracks().then(data => this.setState({track_data: data}));
-    // this.testWFS()
   }
 
 
