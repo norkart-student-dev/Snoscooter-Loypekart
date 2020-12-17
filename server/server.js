@@ -1,11 +1,16 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const path = require('path');
-
+const cookieSession = require('cookie-session')
 const app = express();
 const port = process.env.PORT || 5000;
-const DATABASE_URL= process.env.MONGODB_URI || "mongodb+srv://bjosor:loypekart@cluster0.kyhik.mongodb.net/loypekartdb?retryWrites=true&w=majority";
+const DATABASE_URL= process.env.MONGODB_URI || "mongodb://localhost/subscribers";
                                             
+app.use(cookieSession({
+  name : 'session1',
+  keys: ["key1", "key2"],
+  maxAge : 24 * 60 * 60 * 1000
+}))
 
 
 mongoose.connect(DATABASE_URL, { useNewUrlParser: true })

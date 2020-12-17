@@ -27,7 +27,6 @@ class App extends Component {
     }
 
     this.server = new ServerConnection();
-    
     this.createPoi = this.createPoi.bind(this);
     this.editPoi = this.editPoi.bind(this);
     this.editTrack = this.editTrack.bind(this);
@@ -39,10 +38,12 @@ class App extends Component {
   componentDidMount() {
     this.getPois().then(data => this.setState({poi_data: data}));
     this.getTracks().then(data => this.setState({track_data: data}));
-    // this.testWFS()
+    this.server.isLoggedIn().then(val => this.user.loggedIn = val);
   }
 
-
+  componentDidUpdate() {
+    this.server.isLoggedIn().then(val => this.user.loggedIn = val);
+  }
 
   async handleLogin(username, password) {
     if(username === undefined || username === null || username ==="") {
@@ -56,31 +57,45 @@ class App extends Component {
     else {
       const loginResponse = await this.server.login(username, password);
       if(loginResponse.data === true) {
-        
         this.setState(prevState => ({
           creatingPoi : prevState.creatingPoi,
           currentLocation : prevState.currentLocation,
           showLogin : false,
           currentUser : username
         }));
-      } else {
+        this.user.loggedIn = true;
+      }
+      else if (loginResponse.data === "Allerede logget inn") {
+        this.toggleLoginDialog();
+
+      }
+      else if(loginResponse.data === false) {
         alert("Feil brukernavn eller passord")
       }
-      this.user.loggedIn = loginResponse.data;
+      
       this.setState({}) //don't remove this: part of performance bugfix issue#21, required to allow contextmenu popup to appear
-      console.log(this.user.loggedIn);
     }
   }
 
-  toggleLoginDialog() {
-    let toggle = this.state.showLogin;
-    if(this.user.loggedIn === false) {
+  async toggleLoginDialog() {
+    if(this.user.loggedIn) {
+      if(window.confirm("Du er allerede logget inn, trykk ok for å logge av")) {
+        console.log("logging off");
+        const logout = await this.server.logout();
+        if (logout === true) {
+          this.user.loggedIn = false;
+          console.log("Logged off");
+        } else {
+          console.log("An error occured when setting ");
+          this.user.loggedIn = false;
+        }
+      }
+    }
+    else {
       this.setState(prevState => ({
         currentLocation : prevState.currentLocation,
-        showLogin : !toggle
+        showLogin : true
       }));
-    } else {
-      alert("Du er allerede logget inn som: " + this.state.currentUser)
     }
   }
 
