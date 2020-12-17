@@ -5,7 +5,7 @@ const Track = require('../models/trackSchema')
 const wfs_scooter_url = "http://www.webatlas.no/wms-qms11_vafelt_wfs/?SERVICE=WFS&REQUEST=GetFeature&typeNames=QMS_VA_FELT:SCOOTERLOYPER_1824"
 const output_format = "json" // default to json, also supports GML and XML
 
-// Getting all points of interest
+// Getting all tracks
 router.get('/', async (req, res) => {
     try {
       const url = wfs_scooter_url + "&outputFormat=" + output_format;
@@ -14,7 +14,6 @@ router.get('/', async (req, res) => {
         url : url
       }
       let response = await axios(config);
-      console.log(response);
 
       const tracks = response.data.features.map((item,index) => (
         new Track({
@@ -26,7 +25,6 @@ router.get('/', async (req, res) => {
       ));
       
       tracks.forEach((item, index) => {
-        console.log(item._id)
         Track.findById(item._id, function (err, docs) {
           if (!docs){
               item.save().then(
