@@ -12,4 +12,34 @@ export default class ServerConnection {
             return "invalid login";
         }
     }
+
+    async logout() {
+        try {
+            const res = await axios.post('/qms/logout');
+            if(res.status === 200) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        catch(error) {
+            console.log("An error occured when logging out");
+            console.log(error);
+        }
+    }
+
+    async isLoggedIn() {
+        try {
+            const res = await axios.get('/qms/isLoggedIn');
+            if (res.data === true) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        catch(error) {
+            console.log("An error occured when attempting to verify login");
+            console.log(error);
+        }
+    }
 }

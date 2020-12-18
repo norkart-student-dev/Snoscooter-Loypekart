@@ -26,7 +26,7 @@ export default function LoginDialog(props) {
                 <input className='LoginDialog-input' type='text' placeholder='Brukernavn' value={usernameValue} onChange={onUsernameChange} onKeyPress={handleKeyPress}></input>
                 <input className='LoginDialog-input' type='password' placeholder='Passord' value={passwordValue} onChange={onPasswordChange} onKeyPress={handleKeyPress}></input>
                 <button className='LoginDialog-button' onClick={() => props.handleLogin(usernameValue, passwordValue)}>Bekreft</button>
-                <button className='LoginDialog-button' onClick={() => props.toggleLoginDialog()}>Avbryt</button>
+                <button className='LoginDialog-button' onClick={() => props.closeLoginDialog()}>Avbryt</button>
             </div>
         </div>
     )

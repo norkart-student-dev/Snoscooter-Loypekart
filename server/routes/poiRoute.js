@@ -19,51 +19,65 @@ router.get('/:id', getPoi, (req, res) => {
  
 // Creating one point of interest
 router.post('/', async (req, res) => {
-  const poi = new PoI({
-    name: req.body.name,
-    type: req.body.type,
-    comment: req.body.comment,
-    location: req.body.location
-  })
-  
-  try {
-    const newPoi = await poi.save()
-    res.status(201).json(newPoi)
-  } catch (err) {
-    res.status(400).json({ message: err.message })
+  if(req.session.loggedIn) {
+    const poi = new PoI({
+      name: req.body.name,
+      type: req.body.type,
+      comment: req.body.comment,
+      location: req.body.location
+    })
+
+    try {
+      const newPoi = await poi.save()
+      res.status(201).json(newPoi)
+    } catch (err) {
+      res.status(400).json({ message: err.message })
+    }
+  }
+  else {
+    res.status(503).send();
   }
 })
  
 // Updating one point of interest
 router.patch('/:id', getPoi, async (req, res) => {
-  if (req.body.name != null) {
-    res.poi.name = req.body.name
+  if(req.session.loggedIn) {
+    if (req.body.name != null) {
+      res.poi.name = req.body.name
+    }
+    if (req.body.type != null) {
+      res.poi.type = req.body.type
+    }
+    if (req.body.comment != null) {
+      res.poi.comment = req.body.comment
+    }
+    if (req.body.location != null) {
+      res.poi.location = req.body.location
+    }
+    try {
+      const updatedPoi = await res.poi.save()
+      res.status(201).json(updatedPoi)
+    } catch(err) {
+      res.status(400).json({ message: err.message })
+    }
   }
-  if (req.body.type != null) {
-    res.poi.type = req.body.type
+  else {
+    res.status(503).send();
   }
-  if (req.body.comment != null) {
-    res.poi.comment = req.body.comment
-  }
-  if (req.body.location != null) {
-    res.poi.location = req.body.location
-  }
-  try {
-    const updatedPoi = await res.poi.save()
-    res.status(201).json(updatedPoi)
-  } catch(err) {
-    res.status(400).json({ message: err.message })
-  }
-
 })
  
 // Deleting one point of interest
 router.delete('/:id', getPoi, async (req, res) => {
-  try {
-    await res.poi.remove()
-    res.status(201).json({ message: 'Deleted This Point of Interest' })
-  } catch(err) {
-    res.status(500).json({ message: err.message })
+  if (req.session.loggedIn) {
+    try {
+      await res.poi.remove()
+      res.status(201).json({ message: 'Deleted This Point of Interest' })
+    } catch(err) {
+      res.status(500).json({ message: err.message })
+    }
+  }
+  else {
+    res.status(503).send();
   }
 })
 
