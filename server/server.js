@@ -2,16 +2,47 @@ const express = require('express')
 const mongoose = require('mongoose')
 const path = require('path');
 const cookieSession = require('cookie-session')
+const fs = require('fs');
+const Keygrip = require('keygrip')
 const app = express();
+var dbString = null;
+var sessionName = null;
+var cookieSecure = null;
+
+
+try {
+  let configString = fs.readFileSync('config.txt', 'utf8');
+  configString = configString.split('\n');
+  configString.forEach(element => {
+    if (element.startsWith('db')) {
+      dbString = element.substring(element.indexOf(':') + 1, element.length - 1)
+    }
+    else if (element.startsWith('cookieSession')) {
+      sessionName = element.substring(element.indexOf(':') + 1, element.length - 1)
+      if(sessionName === " " || sessionName === "") {
+        sessionName = "scooterLoypeSession";
+        console.log("No session name provided, defaulting to \"scooterLoypeSession\"");
+      }
+    }
+    else if (element.startsWith('cookieSecure')) {
+      cookieSecure = element.substring(element.indexOf(':') + 1, element.length - 1)
+      if (cookieSecure === 'false') cookieSecure = false;
+      else cookieSecure = true;
+    }
+  });
+}
+catch(err) {
+  console.log(err);
+}
+
 const port = process.env.PORT || 5000;
-const DATABASE_URL= process.env.MONGODB_URI || "mongodb://localhost/subscribers";
+const DATABASE_URL = process.env.MONGODB_URI || dbString
 
 app.disable('x-powered-by');
-
 app.use(cookieSession({
-  name : 'session1',
+  name : sessionName,
   secure : false,
-  keys: ["key1", "key2"],
+  secret : Math.random().toString(),
   maxAge : 24 * 60 * 60 * 1000
 }))
 
