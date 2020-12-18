@@ -46,52 +46,66 @@ router.get('/', async (req, res) => {
 })
 
 router.patch('/split/:id/:coords', getTrack, async (req, res) => {
-  console.log(req.params.coords)
-  let split = req.params.coords.split(',').map(item => Number(item))
-  let coordinates = [...res.track.geometry.coordinates]
-  console.log(coordinates)
-  let index = coordinates.findIndex((item) => (item[0] === split[0] && item[1] === split[1]))
-  console.log(index)
-  res.track.geometry.coordinates = coordinates.slice(0, index+1)
-  console.log(coordinates)
-  res.track.markModified('geometry')
-  const updatedTrack = await res.track.save()
+  if (req.session.loggedIn) {
+    console.log(req.params.coords)
+    let split = req.params.coords.split(',').map(item => Number(item))
+    let coordinates = [...res.track.geometry.coordinates]
+    console.log(coordinates)
+    let index = coordinates.findIndex((item) => (item[0] === split[0] && item[1] === split[1]))
+    console.log(index)
+    res.track.geometry.coordinates = coordinates.slice(0, index+1)
+    console.log(coordinates)
+    res.track.markModified('geometry')
+    const updatedTrack = await res.track.save()
 
-  let updatedTrack2 = new Track({
-    _id: res.track._id + '-2',
-    type: 'Feature',
-    properties: res.track.properties,
-    geometry: res.track.geometry
-  })
-  console.log(coordinates)
-  updatedTrack2.geometry.coordinates = coordinates.slice(index, coordinates.length)
-  updatedTrack2.markModified('geometry')
-  updatedTrack2 = await updatedTrack2.save()
-  res.status(201).json([updatedTrack, updatedTrack2])
+    let updatedTrack2 = new Track({
+      _id: res.track._id + '-2',
+      type: 'Feature',
+      properties: res.track.properties,
+      geometry: res.track.geometry
+    })
+    console.log(coordinates)
+    updatedTrack2.geometry.coordinates = coordinates.slice(index, coordinates.length)
+    updatedTrack2.markModified('geometry')
+    updatedTrack2 = await updatedTrack2.save()
+    res.status(201).json([updatedTrack, updatedTrack2])
+  }
+  else {
+    res.status(403).send();
+  }
 })
 
 // Updating one track
 router.patch('/:id', getTrack, async (req, res) => {
-  if (req.body.MIDL_STENGT != null) {
-    res.track.properties.MIDL_STENGT = req.body.MIDL_STENGT
+  if (req.session.loggedIn) {
+    if (req.body.MIDL_STENGT != null) {
+      res.track.properties.MIDL_STENGT = req.body.MIDL_STENGT
+    }
+    try {
+      res.track.markModified('properties')
+      const updatedTrack = await res.track.save()
+      res.status(201).json(updatedTrack)
+    } catch(err) {
+      res.status(400).json({ message: err.message })
+    }
   }
-  try {
-    res.track.markModified('properties')
-    const updatedTrack = await res.track.save()
-    res.status(201).json(updatedTrack)
-  } catch(err) {
-    res.status(400).json({ message: err.message })
+  else {
+    res.status(403).send();
   }
-
 })
 
 // Deletes ALL Tracks
 router.delete('/', async (req, res) => {
-  try {
-    await Track.remove({})
-    res.status(201).json({ message: 'Deleted all Tracks' })
-  } catch(err) {
-    res.status(500).json({ message: err.message })
+  if(req.session.loggedIn) {
+    try {
+      await Track.remove({})
+      res.status(201).json({ message: 'Deleted all Tracks' })
+    } catch(err) {
+      res.status(500).json({ message: err.message })
+    }
+  }
+  else {
+    res.status(403).send();
   }
 })
 

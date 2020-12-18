@@ -5,20 +5,13 @@ const cookieSession = require('cookie-session')
 const app = express();
 const port = process.env.PORT || 5000;
 const DATABASE_URL= process.env.MONGODB_URI || "mongodb://localhost/subscribers";
-<<<<<<< HEAD
 
 app.disable('x-powered-by');
 
 app.use(cookieSession({
   name : 'session1',
+  secure : false,
   keys: ["key1", "key2"],
-  // secure : true,
-=======
-                                            
-app.use(cookieSession({
-  name : 'session1',
-  keys: ["key1", "key2"],
->>>>>>> 3769b8a25e77c301341b9fb48d1896b56283e954
   maxAge : 24 * 60 * 60 * 1000
 }))
 
