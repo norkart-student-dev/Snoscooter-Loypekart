@@ -40,10 +40,7 @@ class App extends Component {
   componentDidMount() {
     this.getPois().then(data => this.setState({poi_data: data}));
     this.getTracks().then(data => this.setState({track_data: data}));
-<<<<<<< HEAD
-=======
     this.server.isLoggedIn().then(val => this.user.loggedIn = val);
->>>>>>> 5963442 (added user session cookies. TODO: Add login checks to wfs requests)
   }
 
   componentDidUpdate() {
