@@ -1,6 +1,9 @@
 import React, {useContext} from 'react';
 import { Popup, Marker } from 'react-leaflet';
-import { parkingIcon, restStopIcon, reststopWcIcon, tentIcon, foodStopIcon, defaultIcon } from './Icons';
+import { 
+    parkingIcon, restStopIcon, reststopWcIcon, tentIcon, foodStopIcon, defaultIcon,
+    gasIcon, eateryIcon, leanToIcon, paidParkingIcon, autoRepairIcon, overnightStayIcon 
+} from './Icons';
 import UserContext from '../Context';
 import Icon from './Icon';
     
@@ -12,25 +15,26 @@ import Icon from './Icon';
         const closePopup = () => {
             console.log(popup.current._closeButton.click())
         }
-        
-        let icon = null
-        if(item.type === 'Parkeringsplass'){
-            icon = Icon(item)
-        } else if(item.type === 'Rasteplass'){
-            icon = restStopIcon
-        } else if(item.type === 'Rasteplass med WC'){
-            icon = reststopWcIcon
-        } else if(item.type === 'Matservering'){
-            icon = foodStopIcon
-        } else if(item.type === 'Teltplass'){
-            icon = tentIcon
-        } else {
-            icon = defaultIcon
-        }
 
+        const iconValues = {
+            'Parkeringsplass' : parkingIcon,
+            'Rasteplass' : restStopIcon,
+            'Rasteplass med WC' : reststopWcIcon,
+            'Matservering' : foodStopIcon,
+            'Teltplass' : tentIcon,
+            'Bensin' : gasIcon,
+            'Bespisning' : eateryIcon,
+            'Gapahuk' : leanToIcon,
+            'Parkering mot Avgift' : paidParkingIcon,
+            'Verksted' : autoRepairIcon,
+            'Overnatting' : overnightStayIcon
+        }
+        
+        let iconString = item.type;
         return(
-            <Marker position={item.location.coordinates} icon={icon}>
+            <Marker position={item.location.coordinates} icon={iconValues[iconString]}>
                 <Popup className='PoiInfo' ref={popup}>
+
                     <p>
                         <b>Navn:</b> {item.name} <br/>
                         <b>Type:</b> {item.type} <br/>

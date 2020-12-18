@@ -4,7 +4,54 @@ import ReststopImage from '../assets/Rasteplass.jpg';
 import TentImage from '../assets/Teltplass.jpg';
 import FoodstopImage from '../assets/Spisested.jpg';
 import ReststopWcImage from '../assets/Rasteplass_wc.jpg';
+import GasImage from '../assets/bensin.jpg';
+import EasteryImage from '../assets/bespisning.jpg';
+import LeanToImage from '../assets/gapahuk.jpg';
+import PaidParkingImage from '../assets/parkering_avgift.PNG';
+import AutoRepairImage from '../assets/verksted.jpg';
+import OvernightStayImage from '../assets/overnatting.png';
 
+const gasIcon = Leaflet.icon({
+    iconUrl: GasImage,
+    iconSize:     [30, 30], // size of the icon
+    iconAnchor:   [15, 15], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+});
+
+const eateryIcon = Leaflet.icon({
+    iconUrl: EasteryImage,
+    iconSize:     [30, 30], // size of the icon
+    iconAnchor:   [15, 15], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+});
+
+const leanToIcon = Leaflet.icon({
+    iconUrl: LeanToImage,
+    iconSize:     [30, 30], // size of the icon
+    iconAnchor:   [15, 15], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+});
+
+const paidParkingIcon = Leaflet.icon({
+    iconUrl: PaidParkingImage,
+    iconSize:     [30, 30], // size of the icon
+    iconAnchor:   [15, 15], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+});
+
+const autoRepairIcon = Leaflet.icon({
+    iconUrl: AutoRepairImage,
+    iconSize:     [30, 30], // size of the icon
+    iconAnchor:   [15, 15], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+});
+
+const overnightStayIcon = Leaflet.icon({
+    iconUrl: OvernightStayImage,
+    iconSize:     [30, 30], // size of the icon
+    iconAnchor:   [15, 15], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+});
 
 const parkingIcon = Leaflet.icon({
     iconUrl: ParkingImage,
@@ -61,10 +108,17 @@ const defaultIcon = Leaflet.divIcon({
 })
 
 export {
+    gasIcon,
+    eateryIcon,
+    leanToIcon,
+    paidParkingIcon,
+    autoRepairIcon,
+    overnightStayIcon,
     parkingIcon,
     restStopIcon,
     reststopWcIcon,
     tentIcon,
     foodStopIcon,
-    defaultIcon
+    defaultIcon,
+
 }

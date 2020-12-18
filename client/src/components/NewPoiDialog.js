@@ -42,16 +42,18 @@ export default function NewPoiDialog({coords, onDone, selectedPoi}){
         })
     }
 
+    let options = [
+        'Parkeringsplass', 'Rasteplass', 'Rasteplass med WC', 'Matservering', 'Teltplass',
+        'Bensin', 'Bespisning', 'Gapahuk', 'Parkering mot Avgift', 'Verksted', 'Overnatting']
+        
     return(
         <div className='NewPoiDialog'>
             <div className='NewPoiDialog-inner'>
                 <input className='NewPoiDialog-items' type='text' placeholder='Navn' value={name} onChange={nameOnchange}></input>
                 <select className='NewPoiDialog-items' value={type} onChange={typeOnchange}>
-                    <option value="Parkeringsplass">Parkeringsplass</option>
-                    <option value="Rasteplass">Rasteplass</option>
-                    <option value="Rasteplass med WC">Rasteplass med WC</option>
-                    <option value="Matservering">Matservering</option>
-                    <option value="Teltplass">Teltplass</option>
+                  {options.map((option) => (
+                      <option value = {option}>{option}</option>
+                  ))}
                 </select>
                 <textarea value={comment} onChange={commentOnChange} />
                 <button className='NewPoiDialog-button' 
