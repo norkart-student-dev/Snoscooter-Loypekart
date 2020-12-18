@@ -1,0 +1,45 @@
+GET http://localhost:5000/poi
+
+###
+
+GET http://localhost:5000/tracks
+
+###
+
+GET http://localhost:5000/poi/5fd2193216ac6d38304ce3af
+
+###
+
+POST http://localhost:5000/poi
+Content-Type: application/json
+
+{ 
+  "name": "Vannbasert parkering", 
+  "type": "Parkeringsplass",
+  "location": { 
+    "type": "Point", 
+    "coordinates": [60.03456, 5.0843] 
+    }
+}
+
+
+###
+
+PATCH http://localhost:5000/poi/5fd21b39a9c0de0d50053890
+Content-Type: application/json
+
+{
+  "name": "sentrum nyeparkering"
+}
+
+###
+
+DELETE http://localhost:5000/poi/5fd4ac5ed095e62640ef3695
+
+###
+
+DELETE http://localhost:5000/tracks
+
+###
+
+DELETE http://localhost:5000/tracks/171e2c69-1c2d-4f03-9d60-1d2254f073b5-2
