@@ -91,7 +91,7 @@ const reststopWcIcon = Leaflet.icon({
 });
 
 const markerHtmlStyles = `
-        background-color: green;
+        background-color: blue;
         width: 2rem;
         height: 2rem;
         display: block;

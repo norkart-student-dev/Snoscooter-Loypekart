@@ -7,7 +7,6 @@ import ReststopWcImage from '../assets/Rasteplass_wc.jpg';
 
 export default function Icon(item, image){
     const markerHtmlStyles = `
-        background-color: transparent;
         display: grid;
         justify-items: center;
         justify-content: center;
@@ -18,13 +17,13 @@ export default function Icon(item, image){
     
     const defaultIcon = Leaflet.divIcon({
         iconSize:     [30, 30], // size of the icon
-        iconAnchor:   [15, 15], // point of the icon which will correspond to marker's location
+        iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
         popupAnchor:  [0, 0],
         className: 'divIcon',
         html: `
             <div style="${markerHtmlStyles}">
-                <b>${item.name}</b>
-                <img class="Icon" src="${image}" width="30" height="30"/>
+                <div><b>${item.name}</b></div>
+                <div class="placeIcon"/>
             </div>`
     })
 

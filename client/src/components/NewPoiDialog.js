@@ -44,7 +44,7 @@ export default function NewPoiDialog({coords, onDone, selectedPoi}){
 
     let options = [
         'Parkeringsplass', 'Rasteplass', 'Rasteplass med WC', 'Matservering', 'Teltplass',
-        'Bensin', 'Bespisning', 'Gapahuk', 'Parkering mot Avgift', 'Verksted', 'Overnatting']
+        'Bensin', 'Gapahuk', 'Parkering mot Avgift', 'Verksted', 'Overnatting', 'Sted']
         
     return(
         <div className='NewPoiDialog'>

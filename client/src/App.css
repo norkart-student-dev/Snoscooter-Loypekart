@@ -119,3 +119,11 @@
 .divIcon {
   background-color: transparent;
 }
+
+.placeIcon {
+  background-color: blue;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 3rem 3rem 3rem;
+  border: 1px solid #FFFFFF;
+}

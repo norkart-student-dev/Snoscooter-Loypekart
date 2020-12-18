@@ -5,6 +5,7 @@ import {
     gasIcon, eateryIcon, leanToIcon, paidParkingIcon, autoRepairIcon, overnightStayIcon 
 } from './Icons';
 import UserContext from '../Context';
+import Icon from './Icon';
 
     // Returns the relevant marker for the item given 
     export default function PoiMarker({item, editPoi, deletePoi}) {
@@ -19,14 +20,14 @@ import UserContext from '../Context';
             'Parkeringsplass' : parkingIcon,
             'Rasteplass' : restStopIcon,
             'Rasteplass med WC' : reststopWcIcon,
-            'Matservering' : foodStopIcon,
+            'Matservering' : eateryIcon,
             'Teltplass' : tentIcon,
             'Bensin' : gasIcon,
-            'Bespisning' : eateryIcon,
             'Gapahuk' : leanToIcon,
             'Parkering mot Avgift' : paidParkingIcon,
             'Verksted' : autoRepairIcon,
-            'Overnatting' : overnightStayIcon
+            'Overnatting' : overnightStayIcon,
+            'Sted' : Icon(item)
         }
         
         let iconString = item.type;
