@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const axios = require('axios')
 const Track = require('../models/trackSchema')
+const { findById } = require('../models/trackSchema')
 const wfs_scooter_url = "http://www.webatlas.no/wms-qms11_vafelt_wfs/?SERVICE=WFS&REQUEST=GetFeature&typeNames=QMS_VA_FELT:SCOOTERLOYPER_1824"
 const output_format = "json" // default to json, also supports GML and XML
 
@@ -46,24 +47,36 @@ router.get('/', async (req, res) => {
 })
 
 router.patch('/split/:id/:coords', getTrack, async (req, res) => {
-  console.log(req.params.coords)
+  //make array out of coords string
   let split = req.params.coords.split(',').map(item => Number(item))
+  //copy original line coordinates
   let coordinates = [...res.track.geometry.coordinates]
-  console.log(coordinates)
+  // find splittig coordinate
   let index = coordinates.findIndex((item) => (item[0] === split[0] && item[1] === split[1]))
-  console.log(index)
+
   res.track.geometry.coordinates = coordinates.slice(0, index+1)
-  console.log(coordinates)
   res.track.markModified('geometry')
+
   const updatedTrack = await res.track.save()
 
+  let counter = 0
+  let doc = true
+  while(doc){
+    counter = counter + 1
+    doc = await Track.exists({_id: res.track._id + '-' + counter})
+    console.log(counter)
+    console.log(doc)
+    
+
+  }
+
   let updatedTrack2 = new Track({
-    _id: res.track._id + '-2',
+    _id: res.track._id + '-' + counter,
     type: 'Feature',
     properties: res.track.properties,
     geometry: res.track.geometry
   })
-  console.log(coordinates)
+
   updatedTrack2.geometry.coordinates = coordinates.slice(index, coordinates.length)
   updatedTrack2.markModified('geometry')
   updatedTrack2 = await updatedTrack2.save()
@@ -83,6 +96,18 @@ router.patch('/:id', getTrack, async (req, res) => {
     res.status(400).json({ message: err.message })
   }
 
+})
+
+router.delete('/:id', getTrack, async (req, res) => {
+  let id = req.params.id.split('-')[0]
+  console.log(id)
+  
+  try {
+    let docs = await Track.find({_id: {$regex: id}}).deleteMany()
+    res.status(201).json({ message: 'Track deleted' })
+  } catch(err) {
+    res.status(500).json({ message: err.message })
+  }
 })
 
 // Deletes ALL Tracks
