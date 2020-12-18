@@ -2,7 +2,6 @@ const express = require('express')
 const router = express.Router()
 const axios = require('axios')
 const Track = require('../models/trackSchema')
-const { findById } = require('../models/trackSchema')
 const wfs_scooter_url = "http://www.webatlas.no/wms-qms11_vafelt_wfs/?SERVICE=WFS&REQUEST=GetFeature&typeNames=QMS_VA_FELT:SCOOTERLOYPER_1824"
 const output_format = "json" // default to json, also supports GML and XML
 
@@ -98,7 +97,8 @@ router.patch('/:id', getTrack, async (req, res) => {
       const updatedTrack = await res.track.save()
       res.status(201).json(updatedTrack)
     } catch(err) {
-      res.status(400).json({ message: err.message })
+      console.log(err)
+      res.status(400).json({ message: 'Could not update track properties.'})
     }
   }
   else {
@@ -108,13 +108,13 @@ router.patch('/:id', getTrack, async (req, res) => {
 
 router.delete('/:id', getTrack, async (req, res) => {
   let id = req.params.id.split('-')[0]
-  console.log(id)
   
   try {
     let docs = await Track.find({_id: {$regex: id}}).deleteMany()
     res.status(201).json({ message: 'Track deleted' })
   } catch(err) {
-    res.status(500).json({ message: err.message })
+    console.log(err)
+    res.status(500).json({ message: 'Could not delete the specified track.'})
   }
 })
 
@@ -125,6 +125,7 @@ router.delete('/', async (req, res) => {
       await Track.remove({})
       res.status(201).json({ message: 'Deleted all Tracks' })
     } catch(err) {
+      console.log(err)
       res.status(500).json({ message: err.message })
     }
   }
@@ -141,7 +142,8 @@ async function getTrack(req, res, next) {
       return res.status(404).json({ message: 'Cant find track'})
     }
   } catch(err){
-    return res.status(500).json({ message: err.message })
+    console.log(err)
+    return res.status(500).json({ message: 'Could not find track with id: ' + req.params.id })
   }
 
   res.track = track

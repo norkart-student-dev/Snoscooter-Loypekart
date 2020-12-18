@@ -5,14 +5,15 @@ import TentImage from '../assets/Teltplass.jpg';
 import FoodstopImage from '../assets/Spisested.jpg';
 import ReststopWcImage from '../assets/Rasteplass_wc.jpg';
 
-export default function Icon(item){
+export default function Icon(item, image){
     const markerHtmlStyles = `
         background-color: transparent;
         display: grid;
         justify-items: center;
         justify-content: center;
         font-size: medium;
-        text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
+        color: white;
+        text-shadow: -1.1px -1.1px 0 black, 1.1px -1.1px 0 black, -1.1px 1.1px 0 black, 1.1px 1.1px 0 black;
         grid-template-rows: 1fr 1fr;`
     
     const defaultIcon = Leaflet.divIcon({
@@ -23,7 +24,7 @@ export default function Icon(item){
         html: `
             <div style="${markerHtmlStyles}">
                 <b>${item.name}</b>
-                <img class="Icon" src="${ParkingImage}" width="30" height="30"/>
+                <img class="Icon" src="${image}" width="30" height="30"/>
             </div>`
     })
 

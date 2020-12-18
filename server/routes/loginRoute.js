@@ -7,7 +7,6 @@ const webqmsapi_login = "https://privva-qms11-app.norkart.no/QMSWebAPI/QMSWebApi
 const portalStr = "Portal=Portal_scooter";
 
 router.post('/login', async(req, res) => {
-  console.log(req.session.loggedIn);
   if (req.session.loggedIn !== true) {
     const user = req.body.username;
     const password = req.body.password;
@@ -45,7 +44,6 @@ router.post('/login', async(req, res) => {
 });
 
 router.post('/logout', async(req, res) => {
-  console.log(req.session.loggedIn);
   try {
     req.session.loggedIn = false;
     res.status(200).send()
@@ -57,7 +55,6 @@ router.post('/logout', async(req, res) => {
 })
 
 router.get('/isLoggedIn', async(req, res) => {
-  console.log(req.session.loggedIn);
   try {
     if (req.session.loggedIn === true) {
       res.status(200).send(true);

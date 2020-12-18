@@ -5,8 +5,7 @@ import {
     gasIcon, eateryIcon, leanToIcon, paidParkingIcon, autoRepairIcon, overnightStayIcon 
 } from './Icons';
 import UserContext from '../Context';
-import Icon from './Icon';
-    
+
     // Returns the relevant marker for the item given 
     export default function PoiMarker({item, editPoi, deletePoi}) {
         const user = useContext(UserContext)
