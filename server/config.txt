@@ -1,0 +1,9 @@
+//Forklaring:
+//db er uri til databasen, må være mongoDB. Ved lokalkjøring kan db stå urørt eller 'databaseNavn' kan endres til ønsket verdi. Eventuelt kan man sette opp skylagring ved https://www.mongodb.com/cloud/atlas
+//cookieSession er navnen på en brukers session, dersom den står tom vil den bli satt til 'scooterLoypeSession'
+//cookieSecure er en ekstra sikkerhetsinnstilling, men vil automatisk avslutte login dersom man ikke sender over en sikker linje, altså HTTPS.
+//NB: Server vil kræsje dersom formatet som er oppitt under er ikke er følgt
+
+db : mongodb://localhost/databaseNavn
+cookieSession : 
+cookieSecure : false
