@@ -25,7 +25,15 @@ import UserContext from '../Context';
         return(
             <Marker position={item.location.coordinates} icon={icon}>
                 <Popup className='PoiInfo'>
-                    <p>Navn: {item.name} <br/>Type: {item.type}</p>
+                    <p>
+                        <b>Navn:</b> {item.name} <br/>
+                        <b>Type:</b> {item.type} <br/>
+                    </p>
+                    {item.comment ? <p>
+                        <b>Informasjon:</b> <br/>
+                        {item.comment}
+                    </p> : null}
+
                     {user.loggedIn && <button onClick={() => editPoi(item._id)}>Endre</button>}
                     {user.loggedIn && <button onClick={() => { if (window.confirm('Er du sikker på at du vil slette dette punktet?')) deletePoi(item._id)}}>Slett</button>}
 

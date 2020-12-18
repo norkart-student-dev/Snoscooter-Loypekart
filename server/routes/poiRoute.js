@@ -23,9 +23,10 @@ router.post('/', async (req, res) => {
     const poi = new PoI({
       name: req.body.name,
       type: req.body.type,
+      comment: req.body.comment,
       location: req.body.location
     })
-    
+
     try {
       const newPoi = await poi.save()
       res.status(201).json(newPoi)
@@ -44,9 +45,11 @@ router.patch('/:id', getPoi, async (req, res) => {
     if (req.body.name != null) {
       res.poi.name = req.body.name
     }
-
     if (req.body.type != null) {
       res.poi.type = req.body.type
+    }
+    if (req.body.comment != null) {
+      res.poi.comment = req.body.comment
     }
     if (req.body.location != null) {
       res.poi.location = req.body.location

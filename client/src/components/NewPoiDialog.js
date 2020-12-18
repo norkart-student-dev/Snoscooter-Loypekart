@@ -3,10 +3,12 @@ import {useState, useEffect} from 'react';
 export default function NewPoiDialog({coords, onDone, selectedPoi}){
     const [name, setName] = useState('');
     const [type, setType] = useState('Parkeringsplass')
+    const [comment, setComment] = useState('')
 
     useEffect(() => {
         setName(selectedPoi.name)
         setType(selectedPoi.type)
+        setComment(selectedPoi.comment)
     }, [selectedPoi])
 
     const nameOnchange = (event) => {
@@ -14,6 +16,9 @@ export default function NewPoiDialog({coords, onDone, selectedPoi}){
     }
     const typeOnchange = (event) => {
         setType(event.target.value)
+    }
+    const commentOnChange = (event) => {
+        setComment(event.target.value)
     }
 
 
@@ -23,11 +28,13 @@ export default function NewPoiDialog({coords, onDone, selectedPoi}){
         onConfirm = () => onDone(null, { 
             "name": name, 
             "type": type,
+            "comment": comment,
           })
     } else {
         onConfirm = () => onDone(null, { 
             "name": name, 
             "type": type,
+            "comment": comment,
             "location": { 
                 "type": "Point", 
                 "coordinates": [coords.lat, coords.lng]
@@ -46,6 +53,7 @@ export default function NewPoiDialog({coords, onDone, selectedPoi}){
                     <option value="Matservering">Matservering</option>
                     <option value="Teltplass">Teltplass</option>
                 </select>
+                <textarea value={comment} onChange={commentOnChange} />
                 <button className='NewPoiDialog-button' 
                     onClick={() => onConfirm()}>Bekreft</button>
                 <button className='NewPoiDialog-button' onClick={() => onDone(null)}>Avbryt</button>

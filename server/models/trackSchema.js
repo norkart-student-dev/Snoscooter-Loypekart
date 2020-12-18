@@ -15,6 +15,9 @@ const trackSchema = new mongoose.Schema({
     required: true,
     MIDL_STENGT:{
       type:Boolean
+    },
+    KOMMNETAR:{
+      type: String,
     }
   },
   geometry: {

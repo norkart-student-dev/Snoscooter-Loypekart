@@ -65,8 +65,6 @@ router.patch('/split/:id/:coords', getTrack, async (req, res) => {
     while(doc){
       counter = counter + 1
       doc = await Track.exists({_id: res.track._id + '-' + counter})
-      console.log(counter)
-      console.log(doc)
     }
 
     let updatedTrack2 = new Track({
@@ -91,6 +89,9 @@ router.patch('/:id', getTrack, async (req, res) => {
   if (req.session.loggedIn) {
     if (req.body.MIDL_STENGT != null) {
       res.track.properties.MIDL_STENGT = req.body.MIDL_STENGT
+    }
+    if (req.body.KOMMENTAR != null) {
+      res.track.properties.KOMMENTAR = req.body.KOMMENTAR
     }
     try {
       res.track.markModified('properties')
