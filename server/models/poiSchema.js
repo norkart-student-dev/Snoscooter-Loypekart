@@ -10,9 +10,19 @@ const poiSchema = new mongoose.Schema({
     enum: ['Parkeringsplass', 'Rasteplass', 'Rasteplass med WC', 'Matservering', 'Teltplass'],
     required: true
   },
+  comment: {
+    type: String,
+  },
   location: {
-    type: pointSchema.schema,
-    required: true
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true
+    },
+    coordinates: {
+      type: [Number],
+      required: true
+    }
   }
 })
 
