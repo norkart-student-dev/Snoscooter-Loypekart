@@ -99,13 +99,31 @@
 }
 
 .LoginDialog-input {
-  width :125px;
+  width: 125px;
   margin-top: 5px;
 }
 
 .LoginDialog-button {
-  width : 100px;
+  width: 100px;
   margin-top: 5px;
 }
 
+.trackInfo{
+  font-size: small
+}
 
+.PoiInfo{
+  font-size: small;
+}
+
+.divIcon {
+  background-color: transparent;
+}
+
+.placeIcon {
+  background-color: blue;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 3rem 3rem 3rem;
+  border: 1px solid #FFFFFF;
+}

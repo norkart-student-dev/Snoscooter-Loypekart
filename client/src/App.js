@@ -8,6 +8,7 @@ import { UserProvider } from './Context'
 import SideMenu from './components/SideMenu';
 import LoginDialog from './components/LoginDialog';
 import ServerConnection from './ServerConnection';
+import proj4 from 'proj4';
 
 class App extends Component {
   constructor(props) {
@@ -23,25 +24,29 @@ class App extends Component {
     };
 
     this.user = {
-      loggedIn: true //should default to false in production version!
+      loggedIn: false //should default to false in production version!
     }
 
     this.server = new ServerConnection();
-    
     this.createPoi = this.createPoi.bind(this);
     this.editPoi = this.editPoi.bind(this);
     this.editTrack = this.editTrack.bind(this);
+    this.splitTrack = this.splitTrack.bind(this);
     this.deletePoi = this.deletePoi.bind(this);
-    this.toggleLoginDialog = this.toggleLoginDialog.bind(this);
+    this.openLoginDialog = this.openLoginDialog.bind(this);
+    this.closeLoginDialog = this.closeLoginDialog.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
   }
 
   componentDidMount() {
     this.getPois().then(data => this.setState({poi_data: data}));
     this.getTracks().then(data => this.setState({track_data: data}));
+    this.server.isLoggedIn().then(val => this.user.loggedIn = val);
   }
 
-
+  componentDidUpdate() {
+    this.server.isLoggedIn().then(val => this.user.loggedIn = val);
+  }
 
   async handleLogin(username, password) {
     if(username === undefined || username === null || username ==="") {
@@ -55,39 +60,59 @@ class App extends Component {
     else {
       const loginResponse = await this.server.login(username, password);
       if(loginResponse.data === true) {
-        
         this.setState(prevState => ({
           creatingPoi : prevState.creatingPoi,
           currentLocation : prevState.currentLocation,
           showLogin : false,
           currentUser : username
         }));
-      } else {
+        this.user.loggedIn = true;
+      }
+      else if (loginResponse.data === "Allerede logget inn") {
+        this.openLoginDialog();
+
+      }
+      else if(loginResponse.data === false) {
         alert("Feil brukernavn eller passord")
       }
-      this.user.loggedIn = loginResponse.data;
+      
       this.setState({}) //don't remove this: part of performance bugfix issue#21, required to allow contextmenu popup to appear
-      console.log(this.user.loggedIn);
     }
   }
 
-  toggleLoginDialog() {
-    let toggle = this.state.showLogin;
-    if(this.user.loggedIn === false) {
-      this.setState(prevState => ({
-        currentLocation : prevState.currentLocation,
-        showLogin : !toggle
-      }));
+  async openLoginDialog() {
+    if(this.user.loggedIn) {
+      if(window.confirm("Du er allerede logget inn, trykk ok for å logge av")) {
+        console.log("logging off");
+        const logout = await this.server.logout();
+        if (logout === true) {
+          this.user.loggedIn = false;
+          console.log("Logged off");
+        } else {
+          console.log("An error occured when setting ");
+          this.user.loggedIn = false;
+        }
+        this.setState({}) //refresh after logout, prevents loggd out user from opening PoI popup
+      }
     } else {
-      alert("Du er allerede logget inn som: " + this.state.currentUser)
+      this.setState({
+        showLogin : true
+      })
     }
+  }
+
+  async closeLoginDialog() {
+    this.setState({
+      showLogin : false
+    })
   }
 
   render(){
     return(
       <UserProvider value={this.user}>
         <SideMenu
-          openLoginMenu = {this.toggleLoginDialog}
+          openLoginMenu = {this.openLoginDialog}
+          closeLoginDialog = {this.closeLoginDialog}
           currentUser = {this.state.currentUser}
         ></SideMenu>
         <Map 
@@ -98,6 +123,7 @@ class App extends Component {
           editPoi={this.editPoi}
           deletePoi={this.deletePoi}
           editTrack={this.editTrack}
+          splitTrack={this.splitTrack}
         />
 
         {this.state.creatingPoi && <NewPoiDialog 
@@ -121,7 +147,8 @@ class App extends Component {
         {this.state.showLogin &&
           <LoginDialog
             handleLogin={this.handleLogin}
-            toggleLoginDialog={this.toggleLoginDialog}>
+            closeLoginDialog={this.closeLoginDialog}
+            openLoginDialog={this.openLoginDialog}>
           </LoginDialog>
         }
       </UserProvider>
@@ -154,6 +181,11 @@ class App extends Component {
       const data = await this.getPois();
       this.setState({poi_data: data})
     }
+    else if(res.status === 403) {
+      alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
+    } else {
+      alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
+    }
   }
 
   // Value is either null or the id of the point that was clicked
@@ -165,9 +197,14 @@ class App extends Component {
 
     if(data !== undefined){
       const res = await axios.patch('/poi/' + this.state.selectedPoi, data);
-      if(res.status === 201){
+      if(res.status === 201) {
         const data = await this.getPois();
         this.setState({poi_data: data})
+      }
+      else if(res.status === 403) {
+        alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
+      } else {
+        alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
       }
     }
   }
@@ -179,9 +216,14 @@ class App extends Component {
 
     if(data !== undefined){
       const res = await axios.post('/poi', data);
-      if(res.status === 201){
+      if(res.status === 201) {
         const data = await this.getPois();
         this.setState({poi_data: data})
+      }
+      else if(res.status === 403) {
+        alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
+      } else {
+        alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
       }
     }
   }
@@ -196,13 +238,75 @@ class App extends Component {
       this.setState({editingTrack: value})
     }
 
-    if(data !== undefined){
+    if(data !== undefined) {
       const res = await axios.patch('/tracks/' + this.state.selectedTrack, data);
       if(res.status === 201){
         const data = await this.getTracks();
         this.setState({track_data: data})
       }
+      else if(res.status === 403) {
+        alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
+      } else {
+        alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
+      }
     }
+  }
+
+  async splitTrack(item, coords){
+    let current = null;
+
+    item.geometry.coordinates.forEach(element => {
+      let converted = proj4(
+        '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', 
+        '+proj=longlat +datum=WGS84 +no_defs ', 
+        element);
+      converted = [converted[1], converted[0]]
+      let convertedCurr = proj4(
+        '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', 
+        '+proj=longlat +datum=WGS84 +no_defs ', 
+        current);
+        convertedCurr = [convertedCurr[1], convertedCurr[0]]
+      if(current === null){
+        current = element
+      } else if(this.calcCrow(converted[0], converted[1], coords.lat, coords.lng) < this.calcCrow(convertedCurr[0], convertedCurr[1], coords.lat, coords.lng)) {
+        current = element
+      }
+    });
+
+    const res = await axios.patch('/tracks/split/' + item._id + '/' + current)
+    console.log(res.data)
+    if (res.status === 201) {
+      const data = await this.getTracks();
+      this.setState({track_data: data})
+    }
+    else if(res.status === 403) {
+      alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
+    } else {
+      alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
+    }
+  }
+
+  //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
+  calcCrow(lat1, lon1, lat2, lon2) 
+  {
+    console.log(lat1, lon1, lat2, lon2)
+    var R = 6371; // km
+    var dLat = this.toRad(lat2-lat1);
+    var dLon = this.toRad(lon2-lon1);
+    var lat1 = this.toRad(lat1);
+    var lat2 = this.toRad(lat2);
+
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    var d = R * c;
+    return d;
+  }
+
+  // Converts numeric degrees to radians
+  toRad(Value) 
+  {
+      return Value * Math.PI / 180;
   }
 }
 
