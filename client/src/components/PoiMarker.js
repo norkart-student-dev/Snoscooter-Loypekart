@@ -2,14 +2,20 @@ import React, {useContext} from 'react';
 import { Popup, Marker } from 'react-leaflet';
 import { parkingIcon, restStopIcon, reststopWcIcon, tentIcon, foodStopIcon, defaultIcon } from './Icons';
 import UserContext from '../Context';
+import Icon from './Icon';
     
     // Returns the relevant marker for the item given 
     export default function PoiMarker({item, editPoi, deletePoi}) {
         const user = useContext(UserContext)
+        const popup = React.createRef()
+
+        const closePopup = () => {
+            console.log(popup.current._closeButton.click())
+        }
         
         let icon = null
         if(item.type === 'Parkeringsplass'){
-            icon = parkingIcon
+            icon = Icon(item)
         } else if(item.type === 'Rasteplass'){
             icon = restStopIcon
         } else if(item.type === 'Rasteplass med WC'){
@@ -24,7 +30,7 @@ import UserContext from '../Context';
 
         return(
             <Marker position={item.location.coordinates} icon={icon}>
-                <Popup className='PoiInfo'>
+                <Popup className='PoiInfo' ref={popup}>
                     <p>
                         <b>Navn:</b> {item.name} <br/>
                         <b>Type:</b> {item.type} <br/>
@@ -34,8 +40,8 @@ import UserContext from '../Context';
                         {item.comment}
                     </p> : null}
 
-                    {user.loggedIn && <button onClick={() => editPoi(item._id)}>Endre</button>}
-                    {user.loggedIn && <button onClick={() => { if (window.confirm('Er du sikker på at du vil slette dette punktet?')) deletePoi(item._id)}}>Slett</button>}
+                    {user.loggedIn && <button onClick={() => {editPoi(item._id); closePopup();}}>Endre</button>}
+                    {user.loggedIn && <button onClick={() => { if (window.confirm('Er du sikker på at du vil slette dette punktet?')) deletePoi(item._id); closePopup();}}>Slett</button>}
 
                 </Popup>
             </Marker>
