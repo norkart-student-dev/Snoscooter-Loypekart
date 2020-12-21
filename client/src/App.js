@@ -274,7 +274,7 @@ class App extends Component {
     });
 
     const res = await axios.patch('/tracks/split/' + item._id + '/' + current)
-    console.log(res.data)
+    console.log("res data " + res.data)
     if (res.status === 201) {
       const data = await this.getTracks();
       this.setState({track_data: data})
@@ -289,7 +289,7 @@ class App extends Component {
   //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
   calcCrow(lat1, lon1, lat2, lon2) 
   {
-    console.log(lat1, lon1, lat2, lon2)
+    console.log("lats and longs: " + lat1, lon1, lat2, lon2)
     var R = 6371; // km
     var dLat = this.toRad(lat2-lat1);
     var dLon = this.toRad(lon2-lon1);
