@@ -40,7 +40,6 @@ router.get('/', async (req, res) => {
 
   }
   catch (err) {
-    console.log(err);
     res.send(err)
     res.status(500).json({ message: err.message })
   }
@@ -108,7 +107,6 @@ router.patch('/:id', getTrack, async (req, res) => {
 
 router.delete('/:id', getTrack, async (req, res) => {
   let id = req.params.id.split('-')[0]
-  console.log(id)
   
   try {
     let docs = await Track.find({_id: {$regex: id}}).deleteMany()
