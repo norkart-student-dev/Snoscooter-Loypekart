@@ -1,89 +1,44 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const axios = require('axios');
-const apiGateway = require('./ApiGateway');
+const express = require('express')
+const mongoose = require('mongoose')
 const path = require('path');
-
+const cookieSession = require('cookie-session')
 const app = express();
 const port = process.env.PORT || 5000;
+const DATABASE_URL= process.env.MONGODB_URI || "mongodb+srv://bjosor:loypekart@cluster0.kyhik.mongodb.net/loypekartdata?retryWrites=true&w=majority";
 
-//set limit for accepted filesize
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 }));
+app.disable('x-powered-by');
 
-//intercept all outgoing requests for logging purposes
-axios.interceptors.request.use(function (config) {
-  console.log(config)
-  return config;
-}, function (error) {
-  return Promise.reject(error);
-});
-
-const nvdb = new apiGateway("https://nvdbapiles-v3.atlas.vegvesen.no/")
-let token;
-let tokenName;
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.post('/api/getroadobjecttypes', (req, res) => {
-    nvdb.apiCallSingle(req.body.request).then(data => {res.send(data)}).catch(e => {console.log(e)})
-
-});
-
-app.post('/api/getroadobjects', (req, res) => {
-  nvdb.apiCall(req.body.request).then(data => {res.send(data)}).catch(e => {console.log(e)})
-
-});
-
-app.post('/registerCase', (req, res) => {
-  const fs = require("fs"); 
-  const cases = require("./data.json"); 
-
-  console.log(req.body)
-  if(req.body.id !== undefined){
-    let index = cases.findIndex(curCase =>(curCase.id === req.body.id));
-    cases[index] = req.body;
-  } else {
-    let ids = [];
-    let id = cases.length;
-    cases.forEach(element => {
-      ids.push(element.id)
-    });
-    while (ids.includes(id)) {
-      id += 1
-    }
-  
-    req.body['id'] = id;
-    cases.push(req.body); 
-  }
+app.use(cookieSession({
+  name : 'session1',
+  secure : false,
+  keys: ["key1", "key2"],
+  maxAge : 24 * 60 * 60 * 1000
+}))
 
 
-  // STEP 3: Writing to a file 
-  fs.writeFile("data.json", JSON.stringify(cases), err => { 
-     
-    // Checking for errors 
-    if (err) throw err;  
-   
-    console.log("Done writing"); // Success 
-  }); 
+mongoose.connect(DATABASE_URL, { useNewUrlParser: true })
+const db = mongoose.connection
+db.on('error', (error) => console.error(error))
+db.once('open', () => console.log('connected to database'))
 
-  res.send('success')
-});
+app.use(express.json())
 
-app.get('/getCaseList', (req,res) => {
-  const cases = require('./data.json')
+const poiRouter = require('./routes/poiRoute')
+app.use('/poi', poiRouter)
 
-  res.send(cases)
-})
+const LoginRouter = require('./routes/loginRoute');
+app.use('/qms', LoginRouter);
 
-if (process.env.NODE_ENV === 'production') {
-  // Serve any static files
-  app.use(express.static(path.join(__dirname, '../client/build')));
-  // Handle React routing, return all requests to React app
-  app.get('*', function(req, res) {
-    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
-  });
-}
+const trackRouter = require('./routes/wfsRoute')
+app.use('/tracks', trackRouter)
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
+
+if (process.env.NODE_ENV === 'production') {
+    // Serve any static files
+    app.use(express.static(path.join(__dirname, '../client/build')));
+    // Handle React routing, return all requests to React app
+    app.get('*', function(req, res) {
+      res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+    });
+  }
