@@ -8,7 +8,6 @@
 4. [Bidrag](#bidrag)
 5. [Lisens og Eierskap](#lisens-og-eierskap)
 
-
 ### Introduksjon
 
 Snøscooter-løypekart er en enkel web-app som tar sikte på å gi brukere en oversikt over snøscooterløyper og annen nyttig informasjon om sted og punkter i nærheten av løypene.
