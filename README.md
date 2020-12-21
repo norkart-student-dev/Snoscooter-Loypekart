@@ -1,70 +1,41 @@
-# Getting Started with Create React App
+# Velkommen til Snøscooter-Løypekart
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Innhold
 
-## Available Scripts
+1. [Introduksjon](#introduksjon)
+2. [Bruk](#bruk)
+3. [Installasjon og Kjøring](#installasjon-og-kjøring)
+4. [Bidrag](#bidrag)
+5. [Lisens og Eierskap](#lisens-og-eierskap)
 
-In the project directory, you can run:
 
-### `npm start`
+### Introduksjon
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Snøscooter-løypekart er en enkel web-app som tar sikte på å gi brukere en oversikt over snøscooterløyper og annen nyttig informasjon om sted og punkter i nærheten av løypene.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Bruk
 
-### `npm test`
+Ordinære brukere skal kunne se statuser til løyper og få opp innlagte punkter i kartet. Administratorer, dvs kommuneansatte med autorisasjon i QMS, skal kunne legge inn nye punkter same stenge av/åpne løyper.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Installasjon og Kjøring
 
-### `npm run build`
+Under er steg-for-steg instrukser for å sette opp:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Installer følgende
+    1. [Node js](https://nodejs.org)
+    2. [MongoDB](https://www.mongodb.com/try/download/community?tck=docs_server)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. Last ned kodebasen, enten via å trykke [denne linken](https://github.com/norkart-student-dev/Snoscooter-Loypekart/archive/master.zip) eller å [klone ved hjelp av git](https://www.git-scm.com/docs/git-clone). Husk å unzippe dersom du laster ned direkte.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. Åpne en terminal og naviger til mappen lastet ned i forrige steg.
 
-### `npm run eject`
+4. Valgfritt steg: Dersom du vil gjøre noen innstillinger kan dette settes i config.txt
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+4. Kjør ``npm run install_all`` og vent til installasjon av avhengige pakker er fullført. Deretter kjør ``npm run dev`` som burde åpne en nettleser med web-appen. Hvis den ikke åpnes automatisk kan du gå til localhost:3000 for å åpne den manuelt.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Bidrag
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Vi tar gjerne imot pull requests, eneste vi ber om er at de opprettes mot dev og ikke master.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Lisens og Eierskap
+Snøscooter-Løypekart er åpen kildekode programvare lisensiert under [GNU GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.en.html).
