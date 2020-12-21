@@ -6,46 +6,46 @@ const fs = require('fs');
 const Keygrip = require('keygrip')
 const app = express();
 var dbString = null;
-var sessionName = null;
 var cookieSecure = null;
-
+var port = null;
 
 try {
   let configString = fs.readFileSync('config.txt', 'utf8');
   configString = configString.split('\n');
-  configString.forEach(element => {
-    if (element.startsWith('db')) {
-      dbString = element.substring(element.indexOf(':') + 1, element.length - 1)
+  
+  configString.forEach(configParam => {
+    let configVal = configParam.substring(configParam.indexOf(':') + 2, configParam.length - 1);
+    if (configParam.startsWith('port')) {
+      port = parseInt(configVal);
     }
-    else if (element.startsWith('cookieSession')) {
-      sessionName = element.substring(element.indexOf(':') + 1, element.length - 1)
-      if(sessionName === " " || sessionName === "") {
-        sessionName = "scooterLoypeSession";
-        console.log("No session name provided, defaulting to \"scooterLoypeSession\"");
+    else if (configParam.startsWith('db')) {
+      dbString = configVal;
+    }
+
+    else if (configParam.startsWith('cookieSecure')) {
+      if (configVal === 'false') {
+        cookieSecure = false;
+      } else {
+        cookieSecure = true;
       }
-    }
-    else if (element.startsWith('cookieSecure')) {
-      cookieSecure = element.substring(element.indexOf(':') + 1, element.length - 1)
-      if (cookieSecure === 'false') cookieSecure = false;
-      else cookieSecure = true;
     }
   });
 }
 catch(err) {
-  console.log(err);
+  console.log("An error occured while reading config file:\n" + err);
 }
 
-const port = process.env.PORT || 5000;
-const DATABASE_URL = process.env.MONGODB_URI || dbString
+port = process.env.PORT || port;
+const DATABASE_URL = process.env.MONGODB_URI || dbString;
+console.log("Final set database url : " + DATABASE_URL);
 
 app.disable('x-powered-by');
 app.use(cookieSession({
-  name : sessionName,
+  name : 'scooterLoypeSession',
   secure : false,
   secret : Math.random().toString(),
   maxAge : 24 * 60 * 60 * 1000
 }))
-
 
 mongoose.connect(DATABASE_URL, { useNewUrlParser: true })
 const db = mongoose.connection
@@ -58,9 +58,11 @@ const poiRouter = require('./routes/poiRoute')
 app.use('/poi', poiRouter)
 
 const LoginRouter = require('./routes/loginRoute');
-app.use('/qms', LoginRouter);
+app.use('/loginRoute', LoginRouter);
 
-const trackRouter = require('./routes/wfsRoute')
+const trackRouter = require('./routes/wfsRoute');
+const { log } = require('console');
+const { type } = require('os');
 app.use('/tracks', trackRouter)
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
