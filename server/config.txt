@@ -1,9 +1,19 @@
 //Forklaring:
+//port er port nummer applikasjonen skal kjøre på hos server
 //db er uri til databasen, må være mongoDB. Ved lokalkjøring kan db stå urørt eller 'databaseNavn' kan endres til ønsket verdi. Eventuelt kan man sette opp skylagring ved https://www.mongodb.com/cloud/atlas
-//cookieSession er navnen på en brukers session, dersom den står tom vil den bli satt til 'scooterLoypeSession'
 //cookieSecure er en ekstra sikkerhetsinnstilling, men vil automatisk avslutte login dersom man ikke sender over en sikker linje, altså HTTPS.
-//NB: Server vil kræsje dersom formatet som er oppitt under er ikke er følgt
+//NB: Server vil kræsje dersom formatet som er oppitt under er ikke er følgt:
+// parameterNavn : parameterVerdi
+//
 
+<<<<<<< HEAD
 db : mongodb://localhost/databaseNavn
 cookieSession : 
 cookieSecure : false
+=======
+port : 5000
+db : mongodb://localhost/subscribers
+cookieSecure : false
+
+//la denne linjen stå
+>>>>>>> b75a767 (updated renaming, added more server logic. Discovered new bug:adding new databases prevents POIs from loading)
