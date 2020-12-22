@@ -39,8 +39,7 @@ router.get('/', async (req, res) => {
 
   }
   catch (err) {
-    res.send(err)
-    res.status(500).json({ message: err.message })
+    res.status(err.response.status).send();
   }
 })
 
@@ -141,7 +140,8 @@ async function getTrack(req, res, next) {
       return res.status(404).json({ message: 'Cant find track'})
     }
   } catch(err){
-    console.log(err)
+    // console.log(err)
+    console.log("error getting tracks")
     return res.status(500).json({ message: 'Could not find track with id: ' + req.params.id })
   }
 
