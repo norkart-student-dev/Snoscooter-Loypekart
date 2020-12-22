@@ -161,18 +161,28 @@ class App extends Component {
       const res = await axios.get('/poi');
 
       let data = res.data;
+      console.log(data)
       return(data);
     }
     catch(err) {
-      // console.log(err);
+      alert("Det har oppstått et problem og punktdata kan desverre ikke vises, last inn siden eller prøv igjen senere.")
+      return [];
     }
   }
 
-  async getTracks(){
-    const res = await axios.get('/tracks');
+  async getTracks() {
+    try {
+      const res = await axios.get('/tracks');
 
-    let data = res.data;
-    return(data);
+      let data = res.data;
+      console.log(res.data)
+      return(data);
+    }
+    catch(err) {
+      console.log(err);
+      alert("Det har oppstått et problem og løypedata kan desverre ikke leses av, last inn siden på nytt eller prøv igjen senere.")
+      return [];
+    }
   }
 
   async deletePoi(id) {
