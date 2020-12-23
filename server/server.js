@@ -4,7 +4,7 @@ const path = require('path');
 const cookieSession = require('cookie-session')
 const app = express();
 const port = process.env.PORT || 5000;
-const DATABASE_URL= process.env.MONGODB_URI || "mongodb+srv://bjosor:loypekart@cluster0.kyhik.mongodb.net/loypekartdata?retryWrites=true&w=majority";
+const DATABASE_URL= process.env.MONGODB_URI || "mongodb://localhost/loypekart";
 
 app.disable('x-powered-by');
 
