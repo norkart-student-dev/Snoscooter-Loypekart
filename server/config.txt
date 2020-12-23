@@ -1,13 +1,11 @@
-//Forklaring:
-//port er port nummer applikasjonen skal kjøre på hos server
-//db er uri til databasen, må være mongoDB. Ved lokalkjøring kan db stå urørt eller 'databaseNavn' kan endres til ønsket verdi. Eventuelt kan man sette opp skylagring ved https://www.mongodb.com/cloud/atlas
-//cookieSecure er en ekstra sikkerhetsinnstilling, men vil automatisk avslutte login dersom man ikke sender over en sikker linje, altså HTTPS.
+//Forklaring: 
+//port : port nummer applikasjonen skal kjøre på hos server 
+//db   : URI til databasen, må være mongoDB. Ved lokalkjøring kan db stå urørt eller 'databaseNavn' kan endres til ønsket verdi. Eventuelt kan man sette opp skylagring ved https://www.mongodb.com/cloud/atlas
+//cookieSecure er en ekstra sikkerhetsinnstilling. Dersom true kreves det at session går over HTTPS, kan settes til false dersom server er satt opp med HTTP.
 //NB: Server vil kræsje dersom formatet som er oppitt under er ikke er følgt:
 // parameterNavn : parameterVerdi
-//
 
 port : 5000
-db : mongodb://localhost/subscribers
+db : mongodb://localhost/scooterLoypeDB
 cookieSecure : false
-
-//la denne linjen stå
+cookieSession : scooterLoypeSession
