@@ -267,12 +267,12 @@ class App extends Component {
 
     item.geometry.coordinates.forEach(element => {
       let converted = proj4(
-        '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', 
+        '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
         '+proj=longlat +datum=WGS84 +no_defs ', 
         element);
       converted = [converted[1], converted[0]]
       let convertedCurr = proj4(
-        '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', 
+        '++proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
         '+proj=longlat +datum=WGS84 +no_defs ', 
         current);
         convertedCurr = [convertedCurr[1], convertedCurr[0]]
@@ -299,7 +299,6 @@ class App extends Component {
   //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
   calcCrow(lat1, lon1, lat2, lon2) 
   {
-    console.log(lat1, lon1, lat2, lon2)
     var R = 6371; // km
     var dLat = this.toRad(lat2-lat1);
     var dLon = this.toRad(lon2-lon1);
