@@ -53,7 +53,9 @@ import TrackmarkerPopup from './TrackMarkerPopup';
         return(
             <Polyline className='trackLine' pathOptions={pathOptions} positions={coordinates}>
                 <Popup className='trackInfo' id={item._id} position={position} ref={popup}>
-                    <p><b>Status:</b> {item.properties.MIDL_STENGT ? 'Stengt' : 'Åpen'}</p>
+                    <p>
+                        { user.loggedIn ? <span><b>Id:</b> {item._id}</span> : null}
+                        <b>Status:</b> {item.properties.MIDL_STENGT ? 'Stengt' : 'Åpen'}</p>
 
                     {item.properties.KOMMENTAR ? 
                         <p>
