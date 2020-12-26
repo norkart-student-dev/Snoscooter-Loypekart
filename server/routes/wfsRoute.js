@@ -39,15 +39,7 @@ router.get('/', async (req, res) => {
 
   }
   catch (err) {
-<<<<<<< HEAD
-<<<<<<< HEAD
     res.status(err.response.status).send();
-=======
-=======
->>>>>>> b75a767 (updated renaming, added more server logic. Discovered new bug:adding new databases prevents POIs from loading)
-    res.send(err)
-    res.status(500).json({ message: err.message })
->>>>>>> 1eabbbd (updated renaming, added more server logic. Discovered new bug:adding new databases prevents POIs from loading)
   }
 })
 
