@@ -161,18 +161,28 @@ class App extends Component {
       const res = await axios.get('/poi');
 
       let data = res.data;
+      console.log(data)
       return(data);
     }
     catch(err) {
-      // console.log(err);
+      alert("Det har oppstått et problem og punktdata kan desverre ikke vises, last inn siden eller prøv igjen senere.")
+      return [];
     }
   }
 
-  async getTracks(){
-    const res = await axios.get('/tracks');
+  async getTracks() {
+    try {
+      const res = await axios.get('/tracks');
 
-    let data = res.data;
-    return(data);
+      let data = res.data;
+      console.log(res.data)
+      return(data);
+    }
+    catch(err) {
+      console.log(err);
+      alert("Det har oppstått et problem og løypedata kan desverre ikke leses av, last inn siden på nytt eller prøv igjen senere.")
+      return [];
+    }
   }
 
   async deletePoi(id) {
@@ -257,12 +267,12 @@ class App extends Component {
 
     item.geometry.coordinates.forEach(element => {
       let converted = proj4(
-        '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', 
+        '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
         '+proj=longlat +datum=WGS84 +no_defs ', 
         element);
       converted = [converted[1], converted[0]]
       let convertedCurr = proj4(
-        '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', 
+        '++proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
         '+proj=longlat +datum=WGS84 +no_defs ', 
         current);
         convertedCurr = [convertedCurr[1], convertedCurr[0]]
@@ -274,7 +284,7 @@ class App extends Component {
     });
 
     const res = await axios.patch('/tracks/split/' + item._id + '/' + current)
-    console.log(res.data)
+    console.log("res data " + res.data)
     if (res.status === 201) {
       const data = await this.getTracks();
       this.setState({track_data: data})
@@ -289,7 +299,6 @@ class App extends Component {
   //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
   calcCrow(lat1, lon1, lat2, lon2) 
   {
-    console.log(lat1, lon1, lat2, lon2)
     var R = 6371; // km
     var dLat = this.toRad(lat2-lat1);
     var dLon = this.toRad(lon2-lon1);

@@ -15,10 +15,10 @@ import TrackmarkerPopup from './TrackMarkerPopup';
             //popup.current.leafletElement.options.leaflet.map.closePopup();
         }
 
-        //TODO Something is wrong here
+        //Projections. proj4 flips the coordinates for some unknown reason. I flip them back.
         let coordinates = item.geometry.coordinates.map((item,index) => ([item[0], item[1]]))
         coordinates = coordinates.map((item,index) => (proj4(
-            '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', 
+            '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
             '+proj=longlat +datum=WGS84 +no_defs ', 
             item)));
 
@@ -53,7 +53,9 @@ import TrackmarkerPopup from './TrackMarkerPopup';
         return(
             <Polyline className='trackLine' pathOptions={pathOptions} positions={coordinates}>
                 <Popup className='trackInfo' id={item._id} position={position} ref={popup}>
-                    <p><b>Status:</b> {item.properties.MIDL_STENGT ? 'Stengt' : 'Åpen'}</p>
+                    <p>
+                        { user.loggedIn ? <span><b>Id:</b> {item._id}</span> : null}
+                        <b>Status:</b> {item.properties.MIDL_STENGT ? 'Stengt' : 'Åpen'}</p>
 
                     {item.properties.KOMMENTAR ? 
                         <p>

@@ -21,8 +21,6 @@ router.post('/login', async(req, res) => {
         url :  url,
        }
       let response = await axios(config);
-      console.log(response.data[1]);
-      console.log(response.data);
       let valid_str = "{\"result\":\"ok\"";
       if (response.data.startsWith(valid_str)) {
         req.session.loggedIn = true;
@@ -42,6 +40,7 @@ router.post('/login', async(req, res) => {
     res.send("Allerede logget inn")
   }
 });
+
 
 router.post('/logout', async(req, res) => {
   try {

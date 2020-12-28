@@ -1,0 +1,39 @@
+
+###
+GET http://www.webatlas.no/qms11-test/QMSWebApiService.svc
+
+####
+GET https://privva-qms11-app.norkart.no/QMSWebAPI/QMSWebApiService.svc/json/Login?Portal=Portal_scooter&User=simn&Pass=simen
+
+###
+
+GET http://www.webatlas.no/qms11-test/QMSWebApiService.svc/json/GetFeatureType?Portal=Portal_scooter&Task=Scooter_1824&User=user&Pass=password&FeatureType=LednTrasenode
+
+###
+
+GET http://www.webatlas.no/qms11-test/QMSWebApiService.svc/json/CheckoutFeature?Portal=Portal_scooter&Task=Scooter_1824&User=username&Pass=password&id=78
+
+###
+
+GET http://www.webatlas.no/qms11-test/QMSWebApiService.svc/json/UnlockFeature?Portal=Portal_scooter&Task=Scooter_1824&User=username&Pass=password&id=78
+
+###
+
+GET http://www.webatlas.no/qms11-test/QMSWebApiService.svc/json/GetFeature?Portal=Portal_scooter&Task=Scooter_1824&User=username&Pass=password&id=78
+
+###
+
+POST http://www.webatlas.no/qms11-test/QMSWebApiService.svc/json/CheckinFeatureP?Portal=Portal_scooter&Task=Scooter_1824&User=username&Pass=password&id=78&sJson={"type":"FeatureCollection","crs":{"type":"name","properties":{"name":"EPSG:4258"}},"features":[{"type":"feature","properties":{"q_persistent_id":1,"q_name":"LednTrasenode","q_geometry_type":"POINT","KVALITET":{"MÅLEMETODE":"82"},"DATAFANGSTDATO":"20180114","KOPLING":{"KOPL_BRU":"V","KOPL_NAV":"Koplingsobjekt","KOPL_TYP":"KUM"},"KOPLING-EGENDEF":{"SIGNATUR_REG":"<bruker>"}},"geometry":{"type":"Point","coordinates":[5.850155353546176,61.450364264504266,0]}}]
+
+###
+
+POST http://www.webatlas.no/qms11-test/QMSWebApiService.svc/json/SaveNewFeatureP
+
+###
+
+GET http://www.webatlas.no/qms11-test/QMSWebApiService.svc/json/DeleteFeature?Portal=Portal_scooter&Task=Scooter_1824&User=username&Pass=password&id=78
+
+
+###
+
+GET http://www.webatlas.no/qms11-test/QMSWebApiService.svc/json/DoCommand?Portal=Portal_scooter&Command=Login&Task=Scooter_1824&User=brukernavn&Pass=passord
