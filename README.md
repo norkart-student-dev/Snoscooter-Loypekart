@@ -28,13 +28,13 @@ Under er steg-for-steg instrukser for å sette opp:
 
 3. Åpne en terminal og naviger til mappen lastet ned i forrige steg.
 
-4. Valgfritt steg: Dersom du vil gjøre noen innstillinger kan dette settes i config.txt
+4. Valgfritt steg (anbefales for administratorer, ikke nødvendig for lokal testing): Dersom du vil gjøre noen innstillinger kan dette settes i config.txt. Dette er foreløpig begrenset til navn på database, portnummer som serversiden skal kjøre på, bruk av http/https og navn på cookiesession. Innstillinger kan endres når som helst, men krever omstart av serveren for å trå i kraft. Mer detaljert info finnes i config.txt.
 
 4. Kjør ``npm run install_all`` og vent til installasjon av avhengige pakker er fullført. Deretter kjør ``npm run dev`` som burde åpne en nettleser med web-appen. Hvis den ikke åpnes automatisk kan du gå til localhost:3000 for å åpne den manuelt.
 
 ### Bidrag
 
-Vi tar gjerne imot pull requests, eneste vi ber om er at de opprettes mot dev og ikke master.
+Vi tar gjerne imot pull requests, eneste vi ber om er at de opprettes mot dev og ikke master. Dersom du har noen ønsker til funksjonalitet eller vil rapportere en feil setter vi stor pris på om du forteller oss via [issues](https://github.com/norkart-student-dev/Snoscooter-Loypekart/issues/new) her på github.
 
 ### Lisens og Eierskap
 Snøscooter-Løypekart er åpen kildekode programvare lisensiert under [GNU GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.en.html).
