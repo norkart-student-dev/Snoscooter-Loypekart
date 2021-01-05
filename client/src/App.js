@@ -33,6 +33,7 @@ class App extends Component {
     this.editTrack = this.editTrack.bind(this);
     this.splitTrack = this.splitTrack.bind(this);
     this.deletePoi = this.deletePoi.bind(this);
+    this.deleteTrack = this.deleteTrack.bind(this);
     this.openLoginDialog = this.openLoginDialog.bind(this);
     this.closeLoginDialog = this.closeLoginDialog.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
@@ -123,6 +124,7 @@ class App extends Component {
           editPoi={this.editPoi}
           deletePoi={this.deletePoi}
           editTrack={this.editTrack}
+          deleteTrack={this.deleteTrack}
           splitTrack={this.splitTrack}
         />
 
@@ -190,6 +192,19 @@ class App extends Component {
     if(res.status === 201){
       const data = await this.getPois();
       this.setState({poi_data: data})
+    }
+    else if(res.status === 403) {
+      alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
+    } else {
+      alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
+    }
+  }
+
+  async deleteTrack(id) {
+    const res = await axios.delete('/tracks/' + id);
+    if(res.status === 201){
+      const data = await this.getTracks();
+      this.setState({track_data: data})
     }
     else if(res.status === 403) {
       alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");

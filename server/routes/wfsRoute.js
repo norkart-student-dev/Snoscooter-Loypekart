@@ -104,6 +104,7 @@ router.patch('/:id', getTrack, async (req, res) => {
   }
 })
 
+// deletes the specified track and splits derived from it
 router.delete('/:id', getTrack, async (req, res) => {
   let id = req.params.id.split('-')[0]
   

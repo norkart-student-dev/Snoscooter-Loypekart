@@ -5,7 +5,7 @@ import UserContext from '../Context';
 import TrackmarkerPopup from './TrackMarkerPopup';
     
     // draws the relevant track for the item given 
-    export default function TrackMarker({item, editTrack, splitTrack}) {
+    export default function TrackMarker({item, editTrack, splitTrack, deleteTrack}) {
         const user = useContext(UserContext)
         const [position, setPosition] = useState(null)
         const popup = React.createRef()
@@ -54,8 +54,11 @@ import TrackmarkerPopup from './TrackMarkerPopup';
             <Polyline className='trackLine' pathOptions={pathOptions} positions={coordinates}>
                 <Popup className='trackInfo' id={item._id} position={position} ref={popup}>
                     <p>
-                        { user.loggedIn ? <span><b>Id:</b> {item._id}</span> : null}
-                        <b>Status:</b> {item.properties.MIDL_STENGT ? 'Stengt' : 'Åpen'}</p>
+                        { user.loggedIn ? <span><b>Id:</b> {item._id} <br/></span> : null}
+                        
+                        <b>Status:</b> {item.properties.MIDL_STENGT ? 'Stengt' : 'Åpen'}
+                    </p>
+                    
 
                     {item.properties.KOMMENTAR ? 
                         <p>
@@ -71,7 +74,11 @@ import TrackmarkerPopup from './TrackMarkerPopup';
                     {user.loggedIn && <button onClick={() => {
                         splitTrack(item, coords); 
                         closePopup();
-                    }}>Split her</button>}
+                    }}>Del linjen her</button>}
+                    {user.loggedIn && <button onClick={() => {
+                        deleteTrack(item._id); 
+                        closePopup();
+                    }}>Tilbakestill</button>}
                 </Popup>
             </Polyline>
         );
