@@ -8,8 +8,7 @@ import UserContext from '../Context';
 import PoiMarker from './PoiMarker';
 import TrackMarker from './TrackMarker';
 
-const RenderMap = React.memo(({createPoi, editPoi, deletePoi, poi_data, editTrack, deleteTrack, track_data, loggedIn, splitTrack}) => {
-    console.log(loggedIn)
+const RenderMap = React.memo(({createPoi, editPoi, movePoi, deletePoi, poi_data, editTrack, deleteTrack, track_data, loggedIn, splitTrack}) => {
     return (
         <MapContainer className='Map' center={[65.43662791576793, 13.401348570518797]} zoom={8} zoomControl={false}>
 
@@ -26,7 +25,8 @@ const RenderMap = React.memo(({createPoi, editPoi, deletePoi, poi_data, editTrac
                         <PoiMarker 
                             key={item._id} 
                             item={item} 
-                            editPoi={editPoi} 
+                            editPoi={editPoi}
+                            movePoi={movePoi}
                             deletePoi={deletePoi}
                         />
                     ))
@@ -49,11 +49,12 @@ const RenderMap = React.memo(({createPoi, editPoi, deletePoi, poi_data, editTrac
     )
 });
 
-export default function Map({createPoi, editPoi, deletePoi, poi_data, editTrack, deleteTrack, splitTrack, track_data}) {
+export default function Map({createPoi, editPoi, movePoi, deletePoi, poi_data, editTrack, deleteTrack, splitTrack, track_data}) {
     const user = useContext(UserContext);
     return <RenderMap
                 createPoi={createPoi}
                 editPoi={editPoi}
+                movePoi={movePoi}
                 deletePoi={deletePoi}
                 poi_data={poi_data}
                 editTrack={editTrack}

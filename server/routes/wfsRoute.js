@@ -39,6 +39,7 @@ router.get('/', async (req, res) => {
 
   }
   catch (err) {
+    console.log(err)
     res.status(err.response.status).send();
   }
 })

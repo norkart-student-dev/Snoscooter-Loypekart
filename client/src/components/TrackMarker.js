@@ -76,7 +76,7 @@ import TrackmarkerPopup from './TrackMarkerPopup';
                         closePopup();
                     }}>Del linjen her</button>}
                     {user.loggedIn && <button onClick={() => {
-                        deleteTrack(item._id); 
+                        if (window.confirm('Dette vil fjerne alle kommentarer og delinger som hører til denne linjen og gjenopprette den originale linjen slik den var.')) deleteTrack(item._id); 
                         closePopup();
                     }}>Tilbakestill</button>}
                 </Popup>

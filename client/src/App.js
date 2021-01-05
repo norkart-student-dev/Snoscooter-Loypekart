@@ -30,6 +30,7 @@ class App extends Component {
     this.server = new ServerConnection();
     this.createPoi = this.createPoi.bind(this);
     this.editPoi = this.editPoi.bind(this);
+    this.movePoi = this.movePoi.bind(this);
     this.editTrack = this.editTrack.bind(this);
     this.splitTrack = this.splitTrack.bind(this);
     this.deletePoi = this.deletePoi.bind(this);
@@ -122,6 +123,7 @@ class App extends Component {
           createPoi={this.createPoi} 
           creatingPoi={this.state.creatingPoi} 
           editPoi={this.editPoi}
+          movePoi={this.movePoi}
           deletePoi={this.deletePoi}
           editTrack={this.editTrack}
           deleteTrack={this.deleteTrack}
@@ -232,6 +234,25 @@ class App extends Component {
         alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
       }
     }
+  }
+
+  async movePoi (id, latlng){
+    console.log(id,latlng)
+    let data = {"location": { 
+      "type": "Point", 
+      "coordinates": [latlng.lat, latlng.lng]
+    }}
+
+    const res = await axios.patch('/poi/' + id, data);
+      if(res.status === 201) {
+        const data = await this.getPois();
+        this.setState({poi_data: data})
+      }
+      else if(res.status === 403) {
+        alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
+      } else {
+        alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
+      }
   }
 
   // Controls wether we are currently making a new PoI and passes data to the backend when done
