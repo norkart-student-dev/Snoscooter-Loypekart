@@ -9,12 +9,7 @@ import PoiMarker from './PoiMarker';
 import TrackMarker from './TrackMarker';
 import PolygonDrawer from './PolygonDrawer';
 
-<<<<<<< HEAD
 const RenderMap = React.memo(({createPoi, editPoi, movePoi, deletePoi, poi_data, editTrack, deleteTrack, onSelectionUpdate, track_data, loggedIn, splitTrack, selectedTracks, drawing}) => {
-=======
-
-const RenderMap = React.memo(({createPoi, editPoi, movePoi, deletePoi, poi_data, editTrack, deleteTrack, track_data, loggedIn, splitTrack}) => {
->>>>>>> c140babfeb09dbfb3736dbff11b90fbed6fed506
     return (
         <MapContainer className='Map' center={[65.43662791576793, 13.401348570518797]} zoom={8} zoomControl={false}>
 
