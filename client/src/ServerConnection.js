@@ -3,7 +3,7 @@ import axios from 'axios'
 export default class ServerConnection {
     async login(username, password) {
         try {
-            const res = await axios.post('/qms/login', {username: username, password: password});
+            const res = await axios.post('/loginRoute/login', {username: username, password: password});
             return res;
         }
         catch(error) {
@@ -15,7 +15,7 @@ export default class ServerConnection {
 
     async logout() {
         try {
-            const res = await axios.post('/qms/logout');
+            const res = await axios.post('/loginRoute/logout');
             if(res.status === 200) {
                 return true;
             } else {
@@ -30,7 +30,7 @@ export default class ServerConnection {
 
     async isLoggedIn() {
         try {
-            const res = await axios.get('/qms/isLoggedIn');
+            const res = await axios.get('/loginRoute/isLoggedIn');
             if (res.data === true) {
                 return true;
             } else {

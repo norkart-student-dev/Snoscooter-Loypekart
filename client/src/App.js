@@ -320,7 +320,7 @@ class App extends Component {
     });
 
     const res = await axios.patch('/tracks/split/' + item._id + '/' + current)
-    console.log(res.data)
+    console.log("res data " + res.data)
     if (res.status === 201) {
       const data = await this.getTracks();
       this.setState({track_data: data})

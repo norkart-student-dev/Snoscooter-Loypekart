@@ -8,6 +8,7 @@ import UserContext from '../Context';
 import PoiMarker from './PoiMarker';
 import TrackMarker from './TrackMarker';
 
+
 const RenderMap = React.memo(({createPoi, editPoi, movePoi, deletePoi, poi_data, editTrack, deleteTrack, track_data, loggedIn, splitTrack}) => {
     return (
         <MapContainer className='Map' center={[65.43662791576793, 13.401348570518797]} zoom={8} zoomControl={false}>
