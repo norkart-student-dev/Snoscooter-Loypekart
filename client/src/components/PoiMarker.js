@@ -1,5 +1,5 @@
-import React, {useContext} from 'react';
-import { Popup, Marker } from 'react-leaflet';
+import React, {useContext, useState} from 'react';
+import { Popup, Marker, useMapEvents } from 'react-leaflet';
 import { 
     parkingIcon, restStopIcon, reststopWcIcon, tentIcon, foodStopIcon, defaultIcon,
     gasIcon, eateryIcon, leanToIcon, paidParkingIcon, autoRepairIcon, overnightStayIcon 
@@ -8,13 +8,34 @@ import UserContext from '../Context';
 import Icon from './Icon';
 
     // Returns the relevant marker for the item given 
-    export default function PoiMarker({item, editPoi, deletePoi}) {
+    export default function PoiMarker({item, editPoi, movePoi, deletePoi}) {
         const user = useContext(UserContext)
+        const [moving, setMoving] = useState(null)
         const popup = React.createRef()
 
         const closePopup = () => {
-            console.log(popup.current._closeButton.click())
+            popup.current._closeButton.click()
         }
+
+        const movePoiPrompt = (latlng) => {
+            if(moving){
+                movePoi(moving, latlng)
+                setMoving(null)
+            }
+        }
+
+        useMapEvents({
+            click(e) {
+                if (moving){
+                    movePoiPrompt(e.latlng)
+                }
+            },
+            popupopen(e) {
+                if(moving){
+                    e.popup._closeButton.click()
+                }
+            }
+        })
 
         const iconValues = {
             'Parkeringsplass' : parkingIcon,
@@ -45,6 +66,7 @@ import Icon from './Icon';
                     </p> : null}
 
                     {user.loggedIn && <button onClick={() => {editPoi(item._id); closePopup();}}>Endre</button>}
+                    {user.loggedIn && <button onClick={() => {setMoving(item._id); closePopup();}}>Flytt</button>}
                     {user.loggedIn && <button onClick={() => { if (window.confirm('Er du sikker på at du vil slette dette punktet?')) deletePoi(item._id); closePopup();}}>Slett</button>}
 
                 </Popup>
