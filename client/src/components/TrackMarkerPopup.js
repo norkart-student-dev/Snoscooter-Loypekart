@@ -26,7 +26,8 @@ function TrackmarkerPopup({item, coords, editTrack, splitTrack}) {
         <Popup className='trackInfo' id={item._id} position={position}>
             <p>Navn: {item._id}</p>
             {user.loggedIn && <button onClick={() => {editTrack(item._id); setPosition(null)}}>Endre</button>}
-            {user.loggedIn && <button onClick={() => {splitTrack(item, coords); setPosition(null)}}>Split her</button>}
+            {user.loggedIn && <button onClick={() => {splitTrack(item, coords); setPosition(null)}}>Del Linjen her</button>}
+            {user.loggedIn && <button onClick={() => {splitTrack(item, coords); setPosition(null)}}>Tilbakestill</button>}
         </Popup>
     )
 }
