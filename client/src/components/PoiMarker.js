@@ -66,7 +66,7 @@ import Icon from './Icon';
                     </p> : null}
 
                     {user.loggedIn && <button onClick={() => {editPoi(item._id); closePopup();}}>Endre</button>}
-                    {user.loggedIn && <button onClick={() => {setMoving(item._id); closePopup();}}>Flytt</button>}
+                    {user.loggedIn && <button onClick={() => {if (window.confirm('Hvis du vil flytte punktet, klikk "ok" deretter klikk i kartet der punktet skal flyttes til. Hvis ikke, trykk "cancel"')) setMoving(item._id); closePopup();}}>Flytt</button>}
                     {user.loggedIn && <button onClick={() => { if (window.confirm('Er du sikker på at du vil slette dette punktet?')) deletePoi(item._id); closePopup();}}>Slett</button>}
 
                 </Popup>

@@ -9,6 +9,7 @@ import SideMenu from './components/SideMenu';
 import LoginDialog from './components/LoginDialog';
 import ServerConnection from './ServerConnection';
 import proj4 from 'proj4';
+import booleanContains from '@turf/boolean-contains';
 
 class App extends Component {
   constructor(props) {
@@ -21,6 +22,8 @@ class App extends Component {
       currentUser : "",
       poi_data: [],
       track_data: [],
+      selectedTracks: [],
+      drawing: false
     };
 
     this.user = {
@@ -33,11 +36,13 @@ class App extends Component {
     this.movePoi = this.movePoi.bind(this);
     this.editTrack = this.editTrack.bind(this);
     this.splitTrack = this.splitTrack.bind(this);
+    this.selectTracks = this.selectTracks.bind(this);
     this.deletePoi = this.deletePoi.bind(this);
     this.deleteTrack = this.deleteTrack.bind(this);
     this.openLoginDialog = this.openLoginDialog.bind(this);
     this.closeLoginDialog = this.closeLoginDialog.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
+    this.setDrawing = this.setDrawing.bind(this);
   }
 
   componentDidMount() {
@@ -116,6 +121,7 @@ class App extends Component {
           openLoginMenu = {this.openLoginDialog}
           closeLoginDialog = {this.closeLoginDialog}
           currentUser = {this.state.currentUser}
+          setDrawing = {this.setDrawing}
         ></SideMenu>
         <Map 
           poi_data={this.state.poi_data}
@@ -128,6 +134,9 @@ class App extends Component {
           editTrack={this.editTrack}
           deleteTrack={this.deleteTrack}
           splitTrack={this.splitTrack}
+          onSelectionUpdate={this.selectTracks}
+          selectedTracks={this.state.selectedTracks}
+          drawing={this.state.drawing}
         />
 
         {this.state.creatingPoi && <NewPoiDialog 
@@ -332,7 +341,46 @@ class App extends Component {
     }
   }
 
-  //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
+  selectTracks(bounds){
+    bounds = {
+      type: "Feature",
+      geometry: {
+        type: "Polygon",
+        coordinates: [bounds]
+      }
+    }
+    
+    let selected = []
+    this.state.track_data.forEach(item => {
+      //Projections. proj4 flips the coordinates for some unknown reason. I flip them back.
+      let coordinates = [...item.geometry.coordinates]
+      coordinates = coordinates.map((item,index) => (proj4(
+          '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
+          '+proj=longlat +datum=WGS84 +no_defs ', 
+          item)));
+
+      coordinates = coordinates.map((item,index) => ([item[1], item[0]]))
+      let check = {
+        type: "Feature",
+        geometry: {
+          type: "LineString",
+          coordinates: coordinates
+        }
+      }
+
+      if(booleanContains(bounds, check)){
+        selected.push(item)
+      }
+    });
+    this.setState({selectedTracks: selected})
+    console.log(selected)
+  }
+
+  setDrawing(val){
+    this.setState({drawing: val})
+  }
+
+  //This function takes in latitude and longitude of two locations and returns the distance between them as the crow flies (in km)
   calcCrow(lat1, lon1, lat2, lon2) 
   {
     var R = 6371; // km

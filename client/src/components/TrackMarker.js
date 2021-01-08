@@ -2,10 +2,9 @@ import React, {useState, useContext} from 'react';
 import { Popup, Polyline, useMapEvents } from 'react-leaflet';
 import proj4 from 'proj4';
 import UserContext from '../Context';
-import TrackmarkerPopup from './TrackMarkerPopup';
     
     // draws the relevant track for the item given 
-    export default function TrackMarker({item, editTrack, splitTrack, deleteTrack}) {
+    export default function TrackMarker({item, editTrack, splitTrack, deleteTrack, selectedTracks}) {
         const user = useContext(UserContext)
         const [position, setPosition] = useState(null)
         const popup = React.createRef()
@@ -16,7 +15,7 @@ import TrackmarkerPopup from './TrackMarkerPopup';
         }
 
         //Projections. proj4 flips the coordinates for some unknown reason. I flip them back.
-        let coordinates = item.geometry.coordinates.map((item,index) => ([item[0], item[1]]))
+        let coordinates = [...item.geometry.coordinates]
         coordinates = coordinates.map((item,index) => (proj4(
             '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
             '+proj=longlat +datum=WGS84 +no_defs ', 
@@ -25,7 +24,11 @@ import TrackmarkerPopup from './TrackMarkerPopup';
         coordinates = coordinates.map((item,index) => ([item[1], item[0]]))
 
         let pathOptions = {color:'green', weight: 7, smoothFactor:0.2}
-        if(item.properties.MIDL_STENGT === true){
+
+        if (selectedTracks.some(track => track._id === item._id)) {
+            console.log('blue')
+            pathOptions.color = 'blue'
+        } else if(item.properties.MIDL_STENGT === true) {
             pathOptions.color ='red'
         }
 
