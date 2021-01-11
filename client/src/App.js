@@ -30,9 +30,11 @@ class App extends Component {
     this.server = new ServerConnection();
     this.createPoi = this.createPoi.bind(this);
     this.editPoi = this.editPoi.bind(this);
+    this.movePoi = this.movePoi.bind(this);
     this.editTrack = this.editTrack.bind(this);
     this.splitTrack = this.splitTrack.bind(this);
     this.deletePoi = this.deletePoi.bind(this);
+    this.deleteTrack = this.deleteTrack.bind(this);
     this.openLoginDialog = this.openLoginDialog.bind(this);
     this.closeLoginDialog = this.closeLoginDialog.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
@@ -121,8 +123,10 @@ class App extends Component {
           createPoi={this.createPoi} 
           creatingPoi={this.state.creatingPoi} 
           editPoi={this.editPoi}
+          movePoi={this.movePoi}
           deletePoi={this.deletePoi}
           editTrack={this.editTrack}
+          deleteTrack={this.deleteTrack}
           splitTrack={this.splitTrack}
         />
 
@@ -198,6 +202,19 @@ class App extends Component {
     }
   }
 
+  async deleteTrack(id) {
+    const res = await axios.delete('/tracks/' + id);
+    if(res.status === 201){
+      const data = await this.getTracks();
+      this.setState({track_data: data})
+    }
+    else if(res.status === 403) {
+      alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
+    } else {
+      alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
+    }
+  }
+
   // Value is either null or the id of the point that was clicked
   async editPoi(value, data){
     this.setState({editingPoi: value})
@@ -217,6 +234,25 @@ class App extends Component {
         alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
       }
     }
+  }
+
+  async movePoi (id, latlng){
+    console.log(id,latlng)
+    let data = {"location": { 
+      "type": "Point", 
+      "coordinates": [latlng.lat, latlng.lng]
+    }}
+
+    const res = await axios.patch('/poi/' + id, data);
+      if(res.status === 201) {
+        const data = await this.getPois();
+        this.setState({poi_data: data})
+      }
+      else if(res.status === 403) {
+        alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
+      } else {
+        alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
+      }
   }
 
   // Controls wether we are currently making a new PoI and passes data to the backend when done
@@ -267,12 +303,12 @@ class App extends Component {
 
     item.geometry.coordinates.forEach(element => {
       let converted = proj4(
-        '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
+        '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
         '+proj=longlat +datum=WGS84 +no_defs ', 
         element);
       converted = [converted[1], converted[0]]
       let convertedCurr = proj4(
-        '++proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
+        '++proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
         '+proj=longlat +datum=WGS84 +no_defs ', 
         current);
         convertedCurr = [convertedCurr[1], convertedCurr[0]]

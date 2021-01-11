@@ -39,6 +39,7 @@ router.get('/', async (req, res) => {
 
   }
   catch (err) {
+    console.log(err)
     res.status(err.response.status).send();
   }
 })
@@ -104,6 +105,7 @@ router.patch('/:id', getTrack, async (req, res) => {
   }
 })
 
+// deletes the specified track and splits derived from it
 router.delete('/:id', getTrack, async (req, res) => {
   let id = req.params.id.split('-')[0]
   
@@ -118,7 +120,6 @@ router.delete('/:id', getTrack, async (req, res) => {
 
 // Deletes ALL Tracks
 router.delete('/', async (req, res) => {
-  if(req.session.loggedIn) {
     try {
       await Track.remove({})
       res.status(201).json({ message: 'Deleted all Tracks' })
@@ -126,10 +127,6 @@ router.delete('/', async (req, res) => {
       console.log(err)
       res.status(500).json({ message: err.message })
     }
-  }
-  else {
-    res.status(403).send();
-  }
 })
 
 // Middleman function for finding track by id

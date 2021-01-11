@@ -14,6 +14,7 @@ function ContextMarker({createPoi}) {
             }
         },
         popupclose(e) {
+            console.log('close')
             if(e.popup.options.id === 'poiPopup'){
                 setPosition(null)
             }

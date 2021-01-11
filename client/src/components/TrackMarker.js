@@ -2,10 +2,9 @@ import React, {useState, useContext} from 'react';
 import { Popup, Polyline, useMapEvents } from 'react-leaflet';
 import proj4 from 'proj4';
 import UserContext from '../Context';
-import TrackmarkerPopup from './TrackMarkerPopup';
     
     // draws the relevant track for the item given 
-    export default function TrackMarker({item, editTrack, splitTrack}) {
+    export default function TrackMarker({item, editTrack, splitTrack, deleteTrack}) {
         const user = useContext(UserContext)
         const [position, setPosition] = useState(null)
         const popup = React.createRef()
@@ -18,7 +17,7 @@ import TrackmarkerPopup from './TrackMarkerPopup';
         //Projections. proj4 flips the coordinates for some unknown reason. I flip them back.
         let coordinates = item.geometry.coordinates.map((item,index) => ([item[0], item[1]]))
         coordinates = coordinates.map((item,index) => (proj4(
-            '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
+            '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
             '+proj=longlat +datum=WGS84 +no_defs ', 
             item)));
 
@@ -54,8 +53,11 @@ import TrackmarkerPopup from './TrackMarkerPopup';
             <Polyline className='trackLine' pathOptions={pathOptions} positions={coordinates}>
                 <Popup className='trackInfo' id={item._id} position={position} ref={popup}>
                     <p>
-                        { user.loggedIn ? <span><b>Id:</b> {item._id}</span> : null}
-                        <b>Status:</b> {item.properties.MIDL_STENGT ? 'Stengt' : 'Åpen'}</p>
+                        { user.loggedIn ? <span><b>Id:</b> {item._id} <br/></span> : null}
+                        
+                        <b>Status:</b> {item.properties.MIDL_STENGT ? 'Stengt' : 'Åpen'}
+                    </p>
+                    
 
                     {item.properties.KOMMENTAR ? 
                         <p>
@@ -71,7 +73,11 @@ import TrackmarkerPopup from './TrackMarkerPopup';
                     {user.loggedIn && <button onClick={() => {
                         splitTrack(item, coords); 
                         closePopup();
-                    }}>Split her</button>}
+                    }}>Del linjen her</button>}
+                    {user.loggedIn && <button onClick={() => {
+                        if (window.confirm('Dette vil fjerne alle kommentarer og delinger som hører til denne linjen og gjenopprette den originale linjen slik den var.')) deleteTrack(item._id); 
+                        closePopup();
+                    }}>Tilbakestill</button>}
                 </Popup>
             </Polyline>
         );

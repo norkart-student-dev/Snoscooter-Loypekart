@@ -17,8 +17,8 @@ export default function Icon(item, image){
     
     const defaultIcon = Leaflet.divIcon({
         iconSize:     [30, 30], // size of the icon
-        iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-        popupAnchor:  [0, 0],
+        iconAnchor:   [15, 35], // point of the icon which will correspond to marker's location
+        popupAnchor:  [15, 15],
         className: 'divIcon',
         html: `
             <div style="${markerHtmlStyles}">
