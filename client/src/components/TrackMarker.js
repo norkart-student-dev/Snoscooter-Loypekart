@@ -2,7 +2,6 @@ import React, {useState, useContext} from 'react';
 import { Popup, Polyline, useMapEvents } from 'react-leaflet';
 import proj4 from 'proj4';
 import UserContext from '../Context';
-import TrackmarkerPopup from './TrackMarkerPopup';
     
     // draws the relevant track for the item given 
     export default function TrackMarker({item, editTrack, splitTrack, deleteTrack}) {
@@ -18,7 +17,7 @@ import TrackmarkerPopup from './TrackMarkerPopup';
         //Projections. proj4 flips the coordinates for some unknown reason. I flip them back.
         let coordinates = item.geometry.coordinates.map((item,index) => ([item[0], item[1]]))
         coordinates = coordinates.map((item,index) => (proj4(
-            '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
+            '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
             '+proj=longlat +datum=WGS84 +no_defs ', 
             item)));
 
