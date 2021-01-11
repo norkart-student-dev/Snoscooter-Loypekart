@@ -303,12 +303,12 @@ class App extends Component {
 
     item.geometry.coordinates.forEach(element => {
       let converted = proj4(
-        '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
+        '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
         '+proj=longlat +datum=WGS84 +no_defs ', 
         element);
       converted = [converted[1], converted[0]]
       let convertedCurr = proj4(
-        '++proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
+        '++proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
         '+proj=longlat +datum=WGS84 +no_defs ', 
         current);
         convertedCurr = [convertedCurr[1], convertedCurr[0]]
