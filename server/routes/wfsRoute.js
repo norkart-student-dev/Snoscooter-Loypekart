@@ -120,6 +120,7 @@ router.delete('/:id', getTrack, async (req, res) => {
 
 // Deletes ALL Tracks
 router.delete('/', async (req, res) => {
+  if(req.session.loggedIn) {
     try {
       await Track.remove({})
       res.status(201).json({ message: 'Deleted all Tracks' })
@@ -127,6 +128,10 @@ router.delete('/', async (req, res) => {
       console.log(err)
       res.status(500).json({ message: err.message })
     }
+  }
+  else {
+    res.status(403).send();
+  }
 })
 
 // Middleman function for finding track by id
