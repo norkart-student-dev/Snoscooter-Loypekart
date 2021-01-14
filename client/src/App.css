@@ -24,12 +24,18 @@
   color: #61dafb;
 }
 
-.SideDiv img{
+.SideDiv{
   position: absolute;
-  padding-left: 1%;
-  padding-top: 1%;
+  display: grid;
+  grid-auto-columns: 1fr 1fr;
+  width: 50px;
+  height: 100px;
+  padding: 5px;
   z-index: 1001;
-  width : 50px;
+}
+
+.sidediv button{
+  margin: 100px;
 }
 
 .LoginDialog {

@@ -11,13 +11,12 @@ import UserContext from '../Context';
 
         const closePopup = () => {
             console.log(popup.current._closeButton.click())
-            //popup.current.leafletElement.options.leaflet.map.closePopup();
         }
 
         //Projections. proj4 flips the coordinates for some unknown reason. I flip them back.
         let coordinates = [...item.geometry.coordinates]
         coordinates = coordinates.map((item,index) => (proj4(
-            '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
+            '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
             '+proj=longlat +datum=WGS84 +no_defs ', 
             item)));
 
@@ -71,7 +70,7 @@ import UserContext from '../Context';
                     : null}
 
                     {user.loggedIn && <button onClick={() => {
-                        editTrack(item._id); 
+                        editTrack([item]); 
                         closePopup(); 
                     }}>Endre</button>}
                     {user.loggedIn && <button onClick={() => {

@@ -22,6 +22,7 @@ class App extends Component {
       currentUser : "",
       poi_data: [],
       track_data: [],
+      editingTrack: false,
       selectedTracks: [],
       drawing: false
     };
@@ -47,12 +48,66 @@ class App extends Component {
 
   componentDidMount() {
     this.getPois().then(data => this.setState({poi_data: data}));
-    this.getTracks().then(data => this.setState({track_data: data}));
+    this.getTracksSource().then(data => this.setState({track_data: data}));
     this.server.isLoggedIn().then(val => this.user.loggedIn = val);
   }
 
   componentDidUpdate() {
     this.server.isLoggedIn().then(val => this.user.loggedIn = val);
+  }
+
+  render(){
+    return(
+      <UserProvider value={this.user}>
+        <SideMenu
+          openLoginMenu = {this.openLoginDialog}
+          closeLoginDialog = {this.closeLoginDialog}
+          currentUser = {this.state.currentUser}
+          setDrawing = {this.setDrawing}
+        ></SideMenu>
+        <Map 
+          poi_data={this.state.poi_data}
+          track_data={this.state.track_data} 
+          createPoi={this.createPoi} 
+          creatingPoi={this.state.creatingPoi} 
+          editPoi={this.editPoi}
+          movePoi={this.movePoi}
+          deletePoi={this.deletePoi}
+          editTrack={this.editTrack}
+          deleteTrack={this.deleteTrack}
+          splitTrack={this.splitTrack}
+          onSelectionUpdate={this.selectTracks}
+          selectedTracks={this.state.selectedTracks}
+          drawing={this.state.drawing}
+        />
+
+        {this.state.creatingPoi && <NewPoiDialog 
+          onDone={this.createPoi} 
+          coords={this.state.creatingPoi}
+          selectedPoi={{name:'', type:'Parkeringsplass'}}
+        />}
+
+        {this.state.editingPoi && <NewPoiDialog 
+          onDone={this.editPoi} 
+          selectedPoi={this.state.poi_data.filter((v) => (v._id===this.state.editingPoi))[0]}
+        />}
+
+        {this.state.editingTrack && 
+          <TrackDialog
+            onDone={this.editTrack}
+            selectedTracks={this.state.selectedTracks}
+          />}
+
+
+        {this.state.showLogin &&
+          <LoginDialog
+            handleLogin={this.handleLogin}
+            closeLoginDialog={this.closeLoginDialog}
+            openLoginDialog={this.openLoginDialog}>
+          </LoginDialog>
+        }
+      </UserProvider>
+    );
   }
 
   async handleLogin(username, password) {
@@ -114,59 +169,6 @@ class App extends Component {
     })
   }
 
-  render(){
-    return(
-      <UserProvider value={this.user}>
-        <SideMenu
-          openLoginMenu = {this.openLoginDialog}
-          closeLoginDialog = {this.closeLoginDialog}
-          currentUser = {this.state.currentUser}
-          setDrawing = {this.setDrawing}
-        ></SideMenu>
-        <Map 
-          poi_data={this.state.poi_data}
-          track_data={this.state.track_data} 
-          createPoi={this.createPoi} 
-          creatingPoi={this.state.creatingPoi} 
-          editPoi={this.editPoi}
-          movePoi={this.movePoi}
-          deletePoi={this.deletePoi}
-          editTrack={this.editTrack}
-          deleteTrack={this.deleteTrack}
-          splitTrack={this.splitTrack}
-          onSelectionUpdate={this.selectTracks}
-          selectedTracks={this.state.selectedTracks}
-          drawing={this.state.drawing}
-        />
-
-        {this.state.creatingPoi && <NewPoiDialog 
-          onDone={this.createPoi} 
-          coords={this.state.creatingPoi}
-          selectedPoi={{name:'', type:'Parkeringsplass'}}
-        />}
-
-        {this.state.editingPoi && <NewPoiDialog 
-          onDone={this.editPoi} 
-          selectedPoi={this.state.poi_data.filter((v) => (v._id===this.state.editingPoi))[0]}
-        />}
-
-        {this.state.editingTrack && 
-          <TrackDialog
-            onDone={this.editTrack}
-            selectedTrack={this.selectedTrack}
-          />}
-
-
-        {this.state.showLogin &&
-          <LoginDialog
-            handleLogin={this.handleLogin}
-            closeLoginDialog={this.closeLoginDialog}
-            openLoginDialog={this.openLoginDialog}>
-          </LoginDialog>
-        }
-      </UserProvider>
-    );
-  }
 
   // Request a list of all PoI's from the backend
   async getPois(){
@@ -198,6 +200,21 @@ class App extends Component {
     }
   }
 
+  async getTracksSource(){
+    try {
+      const res = await axios.get('/tracks/source');
+
+      let data = res.data;
+      console.log(res.data)
+      return(data);
+    }
+    catch(err) {
+      console.log(err);
+      alert("Det har oppstått et problem og løypedata kan desverre ikke leses av, last inn siden på nytt eller prøv igjen senere.")
+      return [];
+    }
+  }
+
   async deletePoi(id) {
     const res = await axios.delete('/poi/' + id);
     if(res.status === 201){
@@ -214,7 +231,7 @@ class App extends Component {
   async deleteTrack(id) {
     const res = await axios.delete('/tracks/' + id);
     if(res.status === 201){
-      const data = await this.getTracks();
+      const data = await this.getTracksSource();
       this.setState({track_data: data})
     }
     else if(res.status === 403) {
@@ -284,20 +301,25 @@ class App extends Component {
   }
 
   // Value is either null or the id of the track that was clicked
-  async editTrack(value, data){
-    if (value !== null){
+  async editTrack(selected, data){
+    if (selected.length !== 0){
       this.setState({
-        editingTrack: value,
-        selectedTrack: value})
+        editingTrack: true,
+        selectedTracks: selected});
     } else {
-      this.setState({editingTrack: value})
+      this.setState({
+        editingTrack: false,
+        selectedTracks: selected});
     }
 
     if(data !== undefined) {
-      const res = await axios.patch('/tracks/' + this.state.selectedTrack, data);
-      if(res.status === 201){
+      let requests = this.state.selectedTracks.map(track => (
+        axios.patch('/tracks/' + track._id, data))
+      );
+      const res = await Promise.all(requests);
+      if(res[0].status === 201){
         const data = await this.getTracks();
-        this.setState({track_data: data})
+        this.setState({track_data: data});
       }
       else if(res.status === 403) {
         alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
@@ -312,12 +334,12 @@ class App extends Component {
 
     item.geometry.coordinates.forEach(element => {
       let converted = proj4(
-        '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
+        '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
         '+proj=longlat +datum=WGS84 +no_defs ', 
         element);
       converted = [converted[1], converted[0]]
       let convertedCurr = proj4(
-        '++proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
+        '++proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
         '+proj=longlat +datum=WGS84 +no_defs ', 
         current);
         convertedCurr = [convertedCurr[1], convertedCurr[0]]
@@ -355,7 +377,7 @@ class App extends Component {
       //Projections. proj4 flips the coordinates for some unknown reason. I flip them back.
       let coordinates = [...item.geometry.coordinates]
       coordinates = coordinates.map((item,index) => (proj4(
-          '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs ', 
+          '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
           '+proj=longlat +datum=WGS84 +no_defs ', 
           item)));
 
@@ -377,7 +399,12 @@ class App extends Component {
   }
 
   setDrawing(val){
-    this.setState({drawing: val})
+    if(val === true){
+      this.setState({drawing: val})
+    } else {
+      this.setState({editingTrack: true, drawing: val})
+    }
+
   }
 
   //This function takes in latitude and longitude of two locations and returns the distance between them as the crow flies (in km)
@@ -386,8 +413,8 @@ class App extends Component {
     var R = 6371; // km
     var dLat = this.toRad(lat2-lat1);
     var dLon = this.toRad(lon2-lon1);
-    var lat1 = this.toRad(lat1);
-    var lat2 = this.toRad(lat2);
+    lat1 = this.toRad(lat1);
+    lat2 = this.toRad(lat2);
 
     var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
       Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 

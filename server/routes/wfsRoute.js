@@ -7,6 +7,19 @@ const output_format = "json" // default to json, also supports GML and XML
 
 // Getting all tracks
 router.get('/', async (req, res) => {
+  try{
+    const tracksRes = await Track.find()
+    res.status(200).json(tracksRes)
+
+  }
+  catch (err) {
+    console.log(err)
+    res.status(err.response.status).send();
+  }
+})
+
+router.get('/source', async (req, res) => {
+  console.log(req)
   try {
     const url = wfs_scooter_url + "&outputFormat=" + output_format;
     let config = {
