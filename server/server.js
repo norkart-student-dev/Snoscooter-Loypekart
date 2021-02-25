@@ -1,5 +1,4 @@
 const express = require('express')
-const mongoose = require('mongoose')
 const path = require('path');
 const cookieSession = require('cookie-session')
 const fs = require('fs');
@@ -9,6 +8,7 @@ var dbString = null;
 var cookieSecure = null;
 var port = null;
 var cookieSessionName = null;
+
 
 
 function parseConfig(configFile) {
@@ -70,10 +70,6 @@ app.use(cookieSession({
   maxAge : 24 * 60 * 60 * 1000
 }))
 
-mongoose.connect(DATABASE_URL, { useNewUrlParser: true })
-const db = mongoose.connection
-db.on('error', (error) => console.error(error))
-db.once('open', () => console.log('connected to database'))
 
 app.use(express.json())
 
@@ -89,6 +85,26 @@ const { type } = require('os');
 app.use('/tracks', trackRouter)
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
+
+/*
+const mysql = require('mysql2/promise');
+
+mysql.createConnection({
+    user     : 'root',
+    password : '1234'
+}).then((connection) => {
+    console.log('connection established')
+    connection.query('CREATE DATABASE IF NOT EXISTS testdb;').then(() => {
+        // Safe to use sequelize now
+        console.log('Database created!')
+    })
+})
+*/
+
+
+//load database connection
+const db = require("./models");
+db.sequelize.sync();
 
 if (process.env.NODE_ENV === 'production') {
     // Serve any static files

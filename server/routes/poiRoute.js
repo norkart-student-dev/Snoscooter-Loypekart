@@ -1,38 +1,60 @@
 const express = require('express')
 const router = express.Router()
-const PoI = require('../models/poiSchema')
+const db = require('../models')
 
 // Getting all points of interest
 router.get('/', async (req, res) => {
-  try {
-    const pois = await PoI.find()
-    res.json(pois)
-  } catch (err) {
-    res.status(500).json({ message: err.message })
-  }
+    const title = req.query.title;
+    var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
+  
+    db.poi.findAll({ where: condition })
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while retrieving points of interest."
+        });
+      });
 })
  
 // Getting one point of interest
-router.get('/:id', getPoi, (req, res) => {
-  res.json(res.poi)
+router.get('/:id', (req, res) => {
+  const id = req.params.id;
+
+  db.poi.findByPk(id)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving Point of Interest with id=" + id
+      });
+    });
 })
  
 // Creating one point of interest
 router.post('/', async (req, res) => {
   if(req.session.loggedIn) {
-    const poi = new PoI({
+    const poi = {
       name: req.body.name,
       type: req.body.type,
       comment: req.body.comment,
       location: req.body.location
-    })
+    };
 
-    try {
-      const newPoi = await poi.save()
-      res.status(201).json(newPoi)
-    } catch (err) {
-      res.status(400).json({ message: err.message })
-    }
+    // Save Tutorial in the database
+    db.poi.create(poi)
+    .then(data => {
+        res.send(data);
+    })
+    .catch(err => {
+        res.status(500).send({
+        message:
+            err.message || "Some error occurred while creating the Tutorial."
+        });
+    });
   }
   else {
     res.status(503).send();
@@ -40,26 +62,29 @@ router.post('/', async (req, res) => {
 })
  
 // Updating one point of interest
-router.patch('/:id', getPoi, async (req, res) => {
+router.patch('/:id', async (req, res) => {
   if(req.session.loggedIn) {
-    if (req.body.name != null) {
-      res.poi.name = req.body.name
-    }
-    if (req.body.type != null) {
-      res.poi.type = req.body.type
-    }
-    if (req.body.comment != null) {
-      res.poi.comment = req.body.comment
-    }
-    if (req.body.location != null) {
-      res.poi.location = req.body.location
-    }
-    try {
-      const updatedPoi = await res.poi.save()
-      res.status(201).json(updatedPoi)
-    } catch(err) {
-      res.status(400).json({ message: err.message })
-    }
+    const id = req.params.id;
+
+    db.poi.update(req.body, {
+      where: { id: id }
+    })
+      .then(num => {
+        if (num == 1) {
+          res.send({
+            message: "Point of Interest was updated successfully."
+          });
+        } else {
+          res.send({
+            message: `Cannot update Point of Interest with id=${id}. Maybe Point was not found or req.body is empty!`
+          });
+        }
+      })
+      .catch(err => {
+        res.status(500).send({
+          message: "Error updating Point of Interest with id=" + id
+        });
+      });
   }
   else {
     res.status(503).send();
@@ -67,33 +92,33 @@ router.patch('/:id', getPoi, async (req, res) => {
 })
  
 // Deleting one point of interest
-router.delete('/:id', getPoi, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   if (req.session.loggedIn) {
-    try {
-      await res.poi.remove()
-      res.status(201).json({ message: 'Deleted This Point of Interest' })
-    } catch(err) {
-      res.status(500).json({ message: err.message })
+    const id = req.params.id;
+
+    db.poi.destroy({
+      where: { id: id }
+    })
+      .then(num => {
+        if (num == 1) {
+          res.send({
+            message: "Point of Interest was deleted successfully!"
+          });
+        } else {
+          res.send({
+            message: `Cannot delete Point of Interest with id=${id}. Maybe Point was not found!`
+          });
+        }
+      })
+      .catch(err => {
+        res.status(500).send({
+          message: "Could not delete Point of Interest with id=" + id
+        });
+      });
     }
-  }
   else {
     res.status(503).send();
   }
 })
-
-// Middleman function for finding poi by id
-async function getPoi(req, res, next) {
-  try {
-    poi = await PoI.findById(req.params.id)
-    if (poi == null) {
-      return res.status(404).json({ message: 'Cant find poi'})
-    }
-  } catch(err){
-    return res.status(500).json({ message: err.message })
-  }
-
-  res.poi = poi
-  next()
-}
 
 module.exports = router
