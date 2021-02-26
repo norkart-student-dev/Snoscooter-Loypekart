@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
     const trackSchema = sequelize.define("trackSchema", {
-        lokalID : {
+        LOKAL_ID : {
             type : Sequelize.STRING
         },
         coordinates: {
@@ -11,6 +11,10 @@ module.exports = (sequelize, Sequelize) => {
         },
         KOMMENTAR : {
             type : Sequelize.STRING
+        },
+        SPLITTED : {
+            type : Sequelize.BOOLEAN,
+            defaultValue : false
         }
     });
     return trackSchema;
