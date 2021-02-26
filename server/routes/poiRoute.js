@@ -19,6 +19,7 @@ router.get('/', async (req, res) => {
       });
 })
  
+
 // Getting one point of interest
 router.get('/:id', (req, res) => {
   const id = req.params.id;

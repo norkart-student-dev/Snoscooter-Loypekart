@@ -15,7 +15,7 @@ import UserContext from '../Context';
         }
 
         //Projections. proj4 flips the coordinates for some unknown reason. I flip them back.
-        let coordinates = item.geometry.coordinates.map((item,index) => ([item[0], item[1]]))
+        let coordinates = item.coordinates.map((item,index) => ([item[0], item[1]]))
         coordinates = coordinates.map((item,index) => (proj4(
             '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
             '+proj=longlat +datum=WGS84 +no_defs ', 
@@ -24,7 +24,7 @@ import UserContext from '../Context';
         coordinates = coordinates.map((item,index) => ([item[1], item[0]]))
 
         let pathOptions = {color:'green', weight: 7, smoothFactor:0.2}
-        if(item.properties.MIDL_STENGT === true){
+        if(item.MIDL_STENGT === true){
             pathOptions.color ='red'
         }
 
@@ -32,7 +32,7 @@ import UserContext from '../Context';
 
         useMapEvents({
             popupopen(e) {
-                if(e.popup.options.id === item._id){
+                if(e.popup.options.id === item.id){
                     e.popup._source.setStyle({
                         color: 'blue'
                     });
@@ -41,7 +41,7 @@ import UserContext from '../Context';
             },
 
             popupclose(e) {
-                if(e.popup.options.id === item._id){
+                if(e.popup.options.id === item.id){
                     e.popup._source.setStyle({
                         color: pathOptions.color
                     });
@@ -51,23 +51,23 @@ import UserContext from '../Context';
 
         return(
             <Polyline className='trackLine' pathOptions={pathOptions} positions={coordinates}>
-                <Popup className='trackInfo' id={item._id} position={position} ref={popup}>
+                <Popup className='trackInfo' id={item.id} position={position} ref={popup}>
                     <p>
-                        { user.loggedIn ? <span><b>Id:</b> {item._id} <br/></span> : null}
+                        { user.loggedIn ? <span><b>Id:</b> {item.id} <br/></span> : null}
                         
-                        <b>Status:</b> {item.properties.MIDL_STENGT ? 'Stengt' : 'Åpen'}
+                        <b>Status:</b> {item.MIDL_STENGT ? 'Stengt' : 'Åpen'}
                     </p>
                     
 
-                    {item.properties.KOMMENTAR ? 
+                    {item.KOMMENTAR ? 
                         <p>
                             <b>Informasjon:</b> <br/>
-                            {item.properties.KOMMENTAR}
+                            {item.KOMMENTAR}
                         </p> 
                     : null}
 
                     {user.loggedIn && <button onClick={() => {
-                        editTrack(item._id); 
+                        editTrack(item.id); 
                         closePopup(); 
                     }}>Endre</button>}
                     {user.loggedIn && <button onClick={() => {
@@ -75,7 +75,7 @@ import UserContext from '../Context';
                         closePopup();
                     }}>Del linjen her</button>}
                     {user.loggedIn && <button onClick={() => {
-                        if (window.confirm('Dette vil fjerne alle kommentarer og delinger som hører til denne linjen og gjenopprette den originale linjen slik den var.')) deleteTrack(item._id); 
+                        if (window.confirm('Dette vil fjerne alle kommentarer og delinger som hører til denne linjen og gjenopprette den originale linjen slik den var.')) deleteTrack(item.id); 
                         closePopup();
                     }}>Tilbakestill</button>}
                 </Popup>

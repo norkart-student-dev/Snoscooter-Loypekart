@@ -9,8 +9,6 @@ var cookieSecure = null;
 var port = null;
 var cookieSessionName = null;
 
-
-
 function parseConfig(configFile) {
   let configString = fs.readFileSync(configFile, 'utf8');
   configString = configString.replace(/\r/g, ''); ////fix for OSes using '\r\n' as newline in files
@@ -86,7 +84,6 @@ app.use('/tracks', trackRouter)
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
-/*
 const mysql = require('mysql2/promise');
 
 mysql.createConnection({
@@ -99,7 +96,7 @@ mysql.createConnection({
         console.log('Database created!')
     })
 })
-*/
+
 
 
 //load database connection
