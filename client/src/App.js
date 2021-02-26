@@ -138,7 +138,7 @@ class App extends Component {
 
         {this.state.editingPoi && <NewPoiDialog 
           onDone={this.editPoi} 
-          selectedPoi={this.state.poi_data.filter((v) => (v._id===this.state.editingPoi))[0]}
+          selectedPoi={this.state.poi_data.filter((v) => (v.id===this.state.editingPoi))[0]}
         />}
 
         {this.state.editingTrack && 
@@ -269,6 +269,7 @@ class App extends Component {
       const res = await axios.post('/poi', data);
       if(res.status === 201) {
         const data = await this.getPois();
+        console.log(data)
         this.setState({poi_data: data})
       }
       else if(res.status === 403) {

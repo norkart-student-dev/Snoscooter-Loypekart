@@ -45,10 +45,9 @@ router.post('/', async (req, res) => {
       location: req.body.location
     };
 
-    // Save Tutorial in the database
     db.poi.create(poi)
     .then(data => {
-        res.send(data);
+        res.status(201).send(data);
     })
     .catch(err => {
         res.status(500).send({
@@ -72,7 +71,7 @@ router.patch('/:id', async (req, res) => {
     })
       .then(num => {
         if (num == 1) {
-          res.send({
+          res.status(201).send({
             message: "Point of Interest was updated successfully."
           });
         } else {
@@ -102,7 +101,7 @@ router.delete('/:id', async (req, res) => {
     })
       .then(num => {
         if (num == 1) {
-          res.send({
+          res.status(201).send({
             message: "Point of Interest was deleted successfully!"
           });
         } else {
