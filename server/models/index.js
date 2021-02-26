@@ -11,7 +11,9 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     min: dbConfig.pool.min,
     acquire: dbConfig.pool.acquire,
     idle: dbConfig.pool.idle
-  }
+  },
+
+  logging: false
 });
 
 const db = {};
@@ -20,5 +22,6 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.poi = require("./poiSchema.js")(sequelize, Sequelize);
+db.tracks = require("./trackSchema.js")(sequelize, Sequelize);
 
 module.exports = db;
