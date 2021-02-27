@@ -5,7 +5,6 @@ const wfs_scooter_url = "http://www.webatlas.no/wms-qms11_vafelt_wfs/?SERVICE=WF
 const output_format = "json" // default to json, also supports GML and XML
 const db = require('../models')
 
-
 async function loadTracks() {
   try {
     const verifyNonEmpty = await db.tracks.findOne();
@@ -126,23 +125,16 @@ router.delete('/:id', getTrack, async (req, res) => {
       console.log("deleting tracks" + tracksToDelete)
       
       res.status(201).json({ message: 'Track deleted' })
-    } catch(err) {
+    } 
+    catch(err) {
       console.log(err)
       res.status(500).json({ message: 'Could not delete the specified track.'})
     }
   }
+  else {
+    res.status(403).send();
+  }
 })
-
-// Deletes ALL Tracks
-// router.delete('/', async (req, res) => {
-//     try {
-//       await Track.remove({})
-//       res.status(201).json({ message: 'Deleted all Tracks' })
-//     } catch(err) {
-//       console.log(err)
-//       res.status(500).json({ message: err.message })
-//     }
-// })
 
 // Middleman function for finding track by id
 async function getTrack(req, res, next) {

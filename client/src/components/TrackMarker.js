@@ -4,18 +4,19 @@ import proj4 from 'proj4';
 import UserContext from '../Context';
     
     // draws the relevant track for the item given 
-    export default function TrackMarker({item, editTrack, splitTrack, deleteTrack}) {
+    export default function TrackMarker({item, editTrack, splitTrack, deleteTrack, selectedTracks}) {
         const user = useContext(UserContext)
         const [position, setPosition] = useState(null)
         const popup = React.createRef()
 
         const closePopup = () => {
             console.log(popup.current._closeButton.click())
-            //popup.current.leafletElement.options.leaflet.map.closePopup();
         }
 
         //Projections. proj4 flips the coordinates for some unknown reason. I flip them back.
-        let coordinates = item.coordinates.map((item,index) => ([item[0], item[1]]))
+
+        let coordinates = [...item.geometry.coordinates]
+        
         coordinates = coordinates.map((item,index) => (proj4(
             '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
             '+proj=longlat +datum=WGS84 +no_defs ', 
@@ -24,7 +25,11 @@ import UserContext from '../Context';
         coordinates = coordinates.map((item,index) => ([item[1], item[0]]))
 
         let pathOptions = {color:'green', weight: 7, smoothFactor:0.2}
-        if(item.MIDL_STENGT === true){
+
+
+        if (selectedTracks.some(track => track._id === item._id)) {
+            pathOptions.color = 'blue'
+        } else if(item.MIDL_STENGT === true) {
             pathOptions.color ='red'
         }
 
@@ -56,8 +61,7 @@ import UserContext from '../Context';
                         { user.loggedIn ? <span><b>Id:</b> {item.LOKAL_ID} <br/></span> : null}
                         
                         <b>Status:</b> {item.MIDL_STENGT ? 'Stengt' : 'Åpen'}
-                    </p>
-                    
+                    </p>              
 
                     {item.KOMMENTAR ? 
                         <p>
@@ -67,7 +71,7 @@ import UserContext from '../Context';
                     : null}
 
                     {user.loggedIn && <button onClick={() => {
-                        editTrack(item.id); 
+                        editTrack([item]); 
                         closePopup(); 
                     }}>Endre</button>}
                     {user.loggedIn && <button onClick={() => {
