@@ -5,9 +5,12 @@ const wfs_scooter_url = "http://www.webatlas.no/wms-qms11_vafelt_wfs/?SERVICE=WF
 const output_format = "json" // default to json, also supports GML and XML
 const db = require('../models')
 
+
 async function loadTracks() {
   try {
-    const url = wfs_scooter_url + "&outputFormat=" + output_format;
+    const verifyNonEmpty = await db.tracks.findOne();
+    if (verifyNonEmpty === null) {
+      const url = wfs_scooter_url + "&outputFormat=" + output_format;
       let config = {
         method : "get",
         url : url
@@ -22,6 +25,7 @@ async function loadTracks() {
           properties : item.properties
         })
       ));
+    }
   } catch(err) {
       console.log(err)
   }
@@ -30,11 +34,6 @@ async function loadTracks() {
 // Getting all tracks
 router.get('/', async (req, res) => {  
   try {
-    const verifyNonEmpty = await db.tracks.findOne();
-    if (verifyNonEmpty === null) {
-      loadTracks();
-    }
-
     const tracks = await db.tracks.findAll();
     console.log(tracks)
     res.status(200).json(tracks)
