@@ -4,9 +4,9 @@ const axios = require('axios')
 const wfs_scooter_url = "http://www.webatlas.no/wms-qms11_vafelt_wfs/?SERVICE=WFS&REQUEST=GetFeature&typeNames=QMS_VA_FELT:SCOOTERLOYPER_1824"
 const output_format = "json" // default to json, also supports GML and XML
 const db = require('../models')
-const { Op } = require("sequelize");
-// Getting all tracks
-router.get('/', async (req, res) => {  
+
+
+async function loadTracks() {
   try {
     const verifyNonEmpty = await db.tracks.findOne();
     if (verifyNonEmpty === null) {
@@ -16,8 +16,7 @@ router.get('/', async (req, res) => {
         url : url
       }
       const response = await axios(config);
-    
-      response.data.features.map((item,index) => (
+      await response.data.features.map((item,index) => (
         db.tracks.create({
           LOKAL_ID : item.properties.LOKALID,
           MIDL_STENGT : item.properties.MIDL_STENGT,
@@ -27,7 +26,14 @@ router.get('/', async (req, res) => {
         })
       ));
     }
+  } catch(err) {
+      console.log(err)
+  }
+}
 
+// Getting all tracks
+router.get('/', async (req, res) => {  
+  try {
     const tracks = await db.tracks.findAll();
     console.log(tracks)
     res.status(200).json(tracks)
@@ -157,4 +163,4 @@ async function getTrack(req, res, next) {
   next()
 }
 
-module.exports = router
+module.exports = {router, loadTracks}
