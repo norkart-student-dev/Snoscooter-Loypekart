@@ -25,7 +25,7 @@ const RenderMap = React.memo(({createPoi, editPoi, movePoi, deletePoi, poi_data,
                 {poi_data !== undefined && 
                     poi_data.map((item, index) => (
                         <PoiMarker 
-                            key={item._id} 
+                            key={item.id} 
                             item={item} 
                             editPoi={editPoi}
                             movePoi={movePoi}
@@ -39,7 +39,7 @@ const RenderMap = React.memo(({createPoi, editPoi, movePoi, deletePoi, poi_data,
             {track_data.length !== 0 &&
                 track_data.map((item, index) => (
                     <TrackMarker
-                        key={item._id}
+                        key={item.id}
                         item={item}
                         editTrack={editTrack}
                         splitTrack={splitTrack}

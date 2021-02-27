@@ -169,14 +169,12 @@ class App extends Component {
     })
   }
 
-
   // Request a list of all PoI's from the backend
   async getPois(){
     try{
       const res = await axios.get('/poi');
 
       let data = res.data;
-      console.log(data)
       return(data);
     }
     catch(err) {
@@ -190,7 +188,6 @@ class App extends Component {
       const res = await axios.get('/tracks');
 
       let data = res.data;
-      console.log(res.data)
       return(data);
     }
     catch(err) {
@@ -224,20 +221,26 @@ class App extends Component {
     else if(res.status === 403) {
       alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
     } else {
+      
       alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
     }
   }
 
   async deleteTrack(id) {
-    const res = await axios.delete('/tracks/' + id);
-    if(res.status === 201){
-      const data = await this.getTracksSource();
-      this.setState({track_data: data})
-    }
-    else if(res.status === 403) {
-      alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
-    } else {
-      alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
+    try {
+      const res = await axios.delete('/tracks/' + id);
+      if(res.status === 201){
+        const data = await this.getTracks();
+        this.setState({track_data: data})
+      }
+      else if(res.status === 403) {
+        alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
+      }
+      else {
+        alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
+      }
+    } catch(err) {
+      console.log(err.message)
     }
   }
 
@@ -290,6 +293,7 @@ class App extends Component {
       const res = await axios.post('/poi', data);
       if(res.status === 201) {
         const data = await this.getPois();
+        console.log(data)
         this.setState({poi_data: data})
       }
       else if(res.status === 403) {
@@ -332,7 +336,7 @@ class App extends Component {
   async splitTrack(item, coords){
     let current = null;
 
-    item.geometry.coordinates.forEach(element => {
+    item.coordinates.forEach(element => {
       let converted = proj4(
         '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
         '+proj=longlat +datum=WGS84 +no_defs ', 
@@ -350,8 +354,7 @@ class App extends Component {
       }
     });
 
-    const res = await axios.patch('/tracks/split/' + item._id + '/' + current)
-    console.log("res data " + res.data)
+    const res = await axios.patch('/tracks/split/' + item.id + '/' + current)
     if (res.status === 201) {
       const data = await this.getTracks();
       this.setState({track_data: data})
