@@ -10,8 +10,6 @@ var cookieSecure = serverConfig.cookieSecure;
 var port = process.env.PORT || serverConfig.PORT;
 var cookieSessionName = serverConfig.cookieSessionName;
 
-const DATABASE_URL = serverConfig.DB;
-
 app.disable('x-powered-by');
 app.use(cookieSession({
   name : cookieSessionName,
@@ -35,10 +33,11 @@ const { type } = require('os');
 app.use('/tracks', trackRouter.router)
 
 
-const { default: Axios } = require('axios');
+// const { default: Axios } = require('axios');
 
 let db;
 async function loadTrackData(db, router) {
+  //load database connection
   db = await require("./models");
   await db.sequelize.sync()
   router.loadTracks();
@@ -59,7 +58,7 @@ mysql.createConnection({
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
-//load database connection
+
 
 
 if (process.env.NODE_ENV === 'production') {

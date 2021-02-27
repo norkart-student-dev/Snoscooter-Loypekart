@@ -53,7 +53,7 @@ import UserContext from '../Context';
             <Polyline className='trackLine' pathOptions={pathOptions} positions={coordinates}>
                 <Popup className='trackInfo' id={item.id} position={position} ref={popup}>
                     <p>
-                        { user.loggedIn ? <span><b>Id:</b> {item.id} <br/></span> : null}
+                        { user.loggedIn ? <span><b>Id:</b> {item.LOKAL_ID} <br/></span> : null}
                         
                         <b>Status:</b> {item.MIDL_STENGT ? 'Stengt' : 'Åpen'}
                     </p>
