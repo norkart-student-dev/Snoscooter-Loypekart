@@ -15,15 +15,16 @@ async function loadTracks() {
         url : url
       }
       const response = await axios(config);
-      await response.data.features.map((item,index) => (
+      
+      await response.data.features.map((item,index) => {
         db.tracks.create({
           LOKAL_ID : item.properties.LOKALID,
-          MIDL_STENGT : item.properties.MIDL_STENGT,
+          MIDL_STENGT : false,
           coordinates: item.geometry.coordinates,
           KOMMENTAR : item.properties.KOMMENTAR,
           properties : item.properties
         })
-      ));
+      });
     }
   } catch(err) {
       console.log(err)
@@ -34,7 +35,6 @@ async function loadTracks() {
 router.get('/', async (req, res) => {  
   try {
     const tracks = await db.tracks.findAll();
-    console.log(tracks)
     res.status(200).json(tracks)
 
   }
@@ -83,8 +83,11 @@ router.patch('/split/:id/:coords', getTrack, async (req, res) => {
 // Updating one track
 router.patch('/:id', getTrack, async (req, res) => {
   if (req.session.loggedIn) {
-    if ((req.body.MIDL_STENGT != null) && (req.body.KOMMENTAR != null)) {
+    console.log(req.body)
+    console.log(req.body.MIDL_STENGT);
+    if ((req.body.MIDL_STENGT != null) || (req.body.KOMMENTAR != null)) {
       res.track.MIDL_STENGT = req.body.MIDL_STENGT
+
       try {
         const updatedTrack = await db.tracks.update({MIDL_STENGT : req.body.MIDL_STENGT}, {
           where : {

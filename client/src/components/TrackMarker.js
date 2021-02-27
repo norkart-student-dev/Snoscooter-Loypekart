@@ -10,12 +10,12 @@ import UserContext from '../Context';
         const popup = React.createRef()
 
         const closePopup = () => {
-            console.log(popup.current._closeButton.click())
+            popup.current._closeButton.click()
         }
 
         //Projections. proj4 flips the coordinates for some unknown reason. I flip them back.
 
-        let coordinates = [...item.geometry.coordinates]
+        let coordinates = [...item.coordinates]
         
         coordinates = coordinates.map((item,index) => (proj4(
             '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
@@ -27,7 +27,7 @@ import UserContext from '../Context';
         let pathOptions = {color:'green', weight: 7, smoothFactor:0.2}
 
 
-        if (selectedTracks.some(track => track._id === item._id)) {
+        if (selectedTracks.some(track => track.id === item.id)) {
             pathOptions.color = 'blue'
         } else if(item.MIDL_STENGT === true) {
             pathOptions.color ='red'

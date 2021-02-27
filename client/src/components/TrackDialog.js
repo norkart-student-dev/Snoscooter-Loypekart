@@ -6,13 +6,13 @@ export default function TrackDialog({onDone, selectedTracks}){
 
     useEffect(() => {
         if(selectedTracks.length === 1){
-            setClosed(selectedTracks[0].properties.MIDL_STENGT)
-            setComment(selectedTracks[0].properties.KOMMENTAR)
+            setClosed(selectedTracks[0].MIDL_STENGT)
+            setComment(selectedTracks[0].KOMMENTAR)
         }
     }, [selectedTracks])
 
     const closedOnChange = (event) => {
-        setClosed(Boolean(event.target.value))
+        setClosed(event.target.value)
     }
     const commentOnChange = (event) => {
         setComment(event.target.value)

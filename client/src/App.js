@@ -48,7 +48,7 @@ class App extends Component {
 
   componentDidMount() {
     this.getPois().then(data => this.setState({poi_data: data}));
-    this.getTracksSource().then(data => this.setState({track_data: data}));
+    this.getTracks().then(data => this.setState({track_data: data}));
     this.server.isLoggedIn().then(val => this.user.loggedIn = val);
   }
 
@@ -89,7 +89,7 @@ class App extends Component {
 
         {this.state.editingPoi && <NewPoiDialog 
           onDone={this.editPoi} 
-          selectedPoi={this.state.poi_data.filter((v) => (v._id===this.state.editingPoi))[0]}
+          selectedPoi={this.state.poi_data.filter((v) => (v.id===this.state.editingPoi))[0]}
         />}
 
         {this.state.editingTrack && 
@@ -197,20 +197,20 @@ class App extends Component {
     }
   }
 
-  async getTracksSource(){
-    try {
-      const res = await axios.get('/tracks/source');
+  // async getTracksSource(){
+  //   try {
+  //     const res = await axios.get('/tracks/source');
 
-      let data = res.data;
-      console.log(res.data)
-      return(data);
-    }
-    catch(err) {
-      console.log(err);
-      alert("Det har oppstått et problem og løypedata kan desverre ikke leses av, last inn siden på nytt eller prøv igjen senere.")
-      return [];
-    }
-  }
+  //     let data = res.data;
+  //     console.log(res.data)
+  //     return(data);
+  //   }
+  //   catch(err) {
+  //     console.log(err);
+  //     alert("Det har oppstått et problem og løypedata kan desverre ikke leses av, last inn siden på nytt eller prøv igjen senere.")
+  //     return [];
+  //   }
+  // }
 
   async deletePoi(id) {
     const res = await axios.delete('/poi/' + id);
@@ -315,21 +315,32 @@ class App extends Component {
         editingTrack: false,
         selectedTracks: selected});
     }
-
+    console.log(data)
     if(data !== undefined) {
       let requests = this.state.selectedTracks.map(track => (
-        axios.patch('/tracks/' + track._id, data))
+        axios.patch('/tracks/' + track.id, data))
       );
-      const res = await Promise.all(requests);
-      if(res[0].status === 201){
-        const data = await this.getTracks();
-        this.setState({track_data: data});
+      try {
+        const res = await Promise.all(requests);
+        console.log(res);
+        console.log(res.status)
+        if(res[0].status === 201){
+          const data = await this.getTracks();
+          this.setState({track_data: data});
+        }
+        else if(res.status === 403) {
+          alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
+        } else {
+          alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
+        }
       }
-      else if(res.status === 403) {
-        alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
-      } else {
-        alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
+      catch(error) {
+        console.log("Error when processing track promises")
+        console.log(error)
+        alert("Noe gikk galt under valg av løyper. Prøv å utvide tegneområdet.")
       }
+    } else {
+      console.log("Data is undefined");
     }
   }
 
@@ -378,7 +389,7 @@ class App extends Component {
     let selected = []
     this.state.track_data.forEach(item => {
       //Projections. proj4 flips the coordinates for some unknown reason. I flip them back.
-      let coordinates = [...item.geometry.coordinates]
+      let coordinates = [...item.coordinates]
       coordinates = coordinates.map((item,index) => (proj4(
           '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
           '+proj=longlat +datum=WGS84 +no_defs ', 

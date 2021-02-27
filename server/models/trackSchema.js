@@ -7,7 +7,8 @@ module.exports = (sequelize, Sequelize) => {
             type : Sequelize.JSON
         },
         MIDL_STENGT: {
-            type : Sequelize.BOOLEAN
+            type : Sequelize.BOOLEAN,
+            defaultValue : false
         },
         KOMMENTAR : {
             type : Sequelize.STRING
