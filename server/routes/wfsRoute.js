@@ -86,10 +86,8 @@ router.patch('/:id', getTrack, async (req, res) => {
     console.log(req.body)
     console.log(req.body.MIDL_STENGT);
     if ((req.body.MIDL_STENGT != null) || (req.body.KOMMENTAR != null)) {
-      res.track.MIDL_STENGT = req.body.MIDL_STENGT
-
       try {
-        const updatedTrack = await db.tracks.update({MIDL_STENGT : req.body.MIDL_STENGT}, {
+        const updatedTrack = await db.tracks.update(req.body, {
           where : {
             id : res.track.id
           }
