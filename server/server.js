@@ -4,7 +4,7 @@ const cookieSession = require('cookie-session')
 const fs = require('fs');
 const Keygrip = require('keygrip')
 const app = express();
-const serverConfig = require('./config/server.config.js')
+const serverConfig = require('./config/server.config.js') 
 var cookieSecure = serverConfig.cookieSecure;
 var port = process.env.PORT || serverConfig.PORT;
 var cookieSessionName = serverConfig.cookieSessionName;
@@ -31,12 +31,9 @@ app.use('/loginRoute', LoginRouter);
 const trackRouter = require('./routes/wfsRoute');
 const { log } = require('console');
 const { type } = require('os');
-app.use('/tracks', trackRouter)
-
-app.listen(port, () => console.log(`Listening on port ${port}`));
+app.use('/tracks', trackRouter.router)
 
 const mysql = require('mysql2/promise');
-
 mysql.createConnection({
     user     : 'root',
     password : '1234'
@@ -45,11 +42,15 @@ mysql.createConnection({
     connection.query('CREATE DATABASE IF NOT EXISTS testdb;').then(() => {
         // Safe to use sequelize now
         console.log('Database created!')
+        trackRouter.loadTracks()
     })
 })
 
+app.listen(port, () => console.log(`Listening on port ${port}`));
+
 //load database connection
 const db = require("./models");
+const { default: Axios } = require('axios');
 db.sequelize.sync();
 
 if (process.env.NODE_ENV === 'production') {
