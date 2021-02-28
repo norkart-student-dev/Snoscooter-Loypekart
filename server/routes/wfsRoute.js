@@ -5,42 +5,99 @@ const wfs_scooter_url = "http://www.webatlas.no/wms-qms11_vafelt_wfs/?SERVICE=WF
 const output_format = "json" // default to json, also supports GML and XML
 const db = require('../models')
 
-async function loadTracks() {
+async function loadTracks(reloading = false) {
   try {
-    const verifyNonEmpty = await db.tracks.findOne();
-    if (verifyNonEmpty === null) {
-      const url = wfs_scooter_url + "&outputFormat=" + output_format;
-      let config = {
-        method : "get",
-        url : url
-      }
-      const response = await axios(config);
-      
-      await response.data.features.map((item,index) => {
-        db.tracks.create({
+    const url = wfs_scooter_url + "&outputFormat=" + output_format;
+    let config = {
+      method : "get",
+      url : url
+    }
+    const response = await axios(config);
+    await response.data.features.map((item, index) => {
+      db.tracks.findOrCreate({
+        where :  {
+          LOKAL_ID : item.properties.LOKALID
+        },
+        defaults : {
           LOKAL_ID : item.properties.LOKALID,
           MIDL_STENGT : false,
           coordinates: item.geometry.coordinates,
           KOMMENTAR : item.properties.KOMMENTAR,
-          properties : item.properties
-        })
-      });
-    }
+        }
+      })
+    })
   } catch(err) {
       console.log(err)
   }
 }
 
+async function reloadTracks() {
+  try {
+    const url = wfs_scooter_url + "&outputFormat=" + output_format;
+    let config = {
+      method : "get",
+      url : url
+    }
+
+    const response = await axios(config);
+
+    await response.data.features.map((item, index) => {
+        db.tracks.findOrCreate({
+          where :  {
+            LOKAL_ID : item.properties.LOKALID
+          },
+          defaults : {
+            LOKAL_ID : item.properties.LOKALID,
+            MIDL_STENGT : false,
+            coordinates: item.geometry.coordinates,
+            KOMMENTAR : item.properties.KOMMENTAR,
+          }
+        })
+    })    
+
+    const dbLOKAL_IDs = await db.tracks.findAll({attributes : ['LOKAL_ID']})
+    let dbIDs = []
+    dbLOKAL_IDs.forEach(e => {dbIDs.push(e.LOKAL_ID)})
+
+    let resIDs = []
+    response.data.features.forEach(e => {resIDs.push(e.properties.LOKALID)})
+
+    let outdatedTrackIDs = dbIDs.filter(x => !resIDs.includes(x)) //tracks in db, but not in response
+
+    outdatedTrackIDs.forEach(id => {
+      db.tracks.destroy({
+        where : {
+          LOKAL_ID : id
+        }
+      })
+    })
+  }
+  catch(error) {
+    console.log(error)
+  }
+}
+
+router.get('/reload', async (req, res) => {
+  try {
+    await reloadTracks()
+    res.status(200).send()
+    console.log("successfully updated tracks")
+  }
+  catch(error) {
+    res.status(err.response).send()
+  }
+})
+
 // Getting all tracks
 router.get('/', async (req, res) => {  
   try {
-    const tracks = await db.tracks.findAll();
+    const tracks = await db.tracks.findAll()
     res.status(200).json(tracks)
 
   }
   catch (err) {
     console.log(err)
-    res.status(err.response.status).send();
+    res.status(err.response.status).send()
   }
 })
 

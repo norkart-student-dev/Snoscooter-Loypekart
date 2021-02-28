@@ -44,6 +44,7 @@ class App extends Component {
     this.closeLoginDialog = this.closeLoginDialog.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
     this.setDrawing = this.setDrawing.bind(this);
+    this.forceReloadDB = this.forceReloadDB.bind(this);
   }
 
   componentDidMount() {
@@ -64,6 +65,7 @@ class App extends Component {
           closeLoginDialog = {this.closeLoginDialog}
           currentUser = {this.state.currentUser}
           setDrawing = {this.setDrawing}
+          forceReloadDB = {this.forceReloadDB}
         ></SideMenu>
         <Map 
           poi_data={this.state.poi_data}
@@ -418,7 +420,24 @@ class App extends Component {
     } else {
       this.setState({editingTrack: true, drawing: val})
     }
+  }
 
+  async forceReloadDB() {
+    if (window.confirm("Trykk ok for å laste inn oppdaterte løypedata, utdaterte løyper vil bli slettet.")) {
+      try {
+        const resReload = await axios.get('/tracks/reload');
+        if (resReload.status === 200) {
+          this.getTracks().then(data => this.setState({track_data: data}));
+        }
+        else {
+          throw new Error('Det oppsto en feil under lasting av løyper. Prøv igjen senere.')
+        }
+      }
+      catch(error) {
+        console.log(error);
+        alert("Det oppsto en feil under oppdatering av løyper.");
+      }
+    }
   }
 
   //This function takes in latitude and longitude of two locations and returns the distance between them as the crow flies (in km)
