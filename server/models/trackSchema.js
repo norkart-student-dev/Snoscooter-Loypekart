@@ -1,37 +1,22 @@
-const mongoose = require('mongoose')
-
-const trackSchema = new mongoose.Schema({
-  _id:{
-    type: String,
-    required: true
-  },
-  type: {
-      type: String,
-      enum: ['Feature'],
-      required: true
-  },
-  properties: {
-    type: Object,
-    required: true,
-    MIDL_STENGT:{
-      type:Boolean
-    },
-    KOMMENTAR:{
-      type: String,
-    }
-  },
-  geometry: {
-    type: {
-      type: String,
-      enum: ['LineString'],
-      required: true
-    },
-    coordinates: {
-      type: [[Number]], // Array of arrays of arrays of numbers
-      required: true
-    }
-  }
-  
-})
-
-module.exports = mongoose.model('tracks', trackSchema)
+module.exports = (sequelize, Sequelize) => {
+    const trackSchema = sequelize.define("trackSchema", {
+        LOKAL_ID : {
+            type : Sequelize.STRING
+        },
+        coordinates: {
+            type : Sequelize.JSON
+        },
+        MIDL_STENGT: {
+            type : Sequelize.BOOLEAN,
+            defaultValue : false
+        },
+        KOMMENTAR : {
+            type : Sequelize.STRING
+        },
+        SPLITTED : {
+            type : Sequelize.BOOLEAN,
+            defaultValue : false
+        }
+    });
+    return trackSchema;
+}

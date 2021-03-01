@@ -1,7 +1,7 @@
 import React, {useContext, useState} from 'react';
 import { Popup, Marker, useMapEvents } from 'react-leaflet';
 import { 
-    parkingIcon, restStopIcon, reststopWcIcon, tentIcon, foodStopIcon, defaultIcon,
+    parkingIcon, restStopIcon, reststopWcIcon, tentIcon,
     gasIcon, eateryIcon, leanToIcon, paidParkingIcon, autoRepairIcon, overnightStayIcon 
 } from './Icons';
 import UserContext from '../Context';
@@ -65,9 +65,9 @@ import Icon from './Icon';
                         {item.comment}
                     </p> : null}
 
-                    {user.loggedIn && <button onClick={() => {editPoi(item._id); closePopup();}}>Endre</button>}
-                    {user.loggedIn && <button onClick={() => { if (window.confirm('Hvis du ønsker og flytte punktet, så klikk ok, deretter klikk i kartet der det skal flyttes til. Hvis ikke klikk avbryt')) setMoving(item._id); closePopup();}}>Flytt</button>}
-                    {user.loggedIn && <button onClick={() => { if (window.confirm('Er du sikker på at du vil slette dette punktet?')) deletePoi(item._id); closePopup();}}>Slett</button>}
+                    {user.loggedIn && <button onClick={() => {editPoi(item.id); closePopup();}}>Endre</button>}
+                    {user.loggedIn && <button onClick={() => { if (window.confirm('Hvis du ønsker og flytte punktet, så klikk ok, deretter klikk i kartet der det skal flyttes til. Hvis ikke klikk avbryt')) setMoving(item.id); closePopup();}}>Flytt</button>}
+                    {user.loggedIn && <button onClick={() => { if (window.confirm('Er du sikker på at du vil slette dette punktet?')) deletePoi(item.id); closePopup();}}>Slett</button>}
 
                 </Popup>
             </Marker>
