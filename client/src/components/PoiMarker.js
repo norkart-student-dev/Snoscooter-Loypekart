@@ -1,7 +1,7 @@
 import React, {useContext, useState} from 'react';
 import { Popup, Marker, useMapEvents } from 'react-leaflet';
 import { 
-    parkingIcon, restStopIcon, reststopWcIcon, tentIcon, foodStopIcon, defaultIcon,
+    parkingIcon, restStopIcon, reststopWcIcon, tentIcon,
     gasIcon, eateryIcon, leanToIcon, paidParkingIcon, autoRepairIcon, overnightStayIcon 
 } from './Icons';
 import UserContext from '../Context';

@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useContext} from 'react';
 import { Popup, Polyline, useMapEvents } from 'react-leaflet';
 import proj4 from 'proj4';
 import UserContext from '../Context';
@@ -6,7 +6,6 @@ import UserContext from '../Context';
     // draws the relevant track for the item given 
     export default function TrackMarker({item, editTrack, splitTrack, deleteTrack, selectedTracks}) {
         const user = useContext(UserContext)
-        const [position, setPosition] = useState(null)
         const popup = React.createRef()
 
         const closePopup = () => {
@@ -56,7 +55,7 @@ import UserContext from '../Context';
 
         return(
             <Polyline className='trackLine' pathOptions={pathOptions} positions={coordinates}>
-                <Popup className='trackInfo' id={item.id} position={position} ref={popup}>
+                <Popup className='trackInfo' id={item.id} ref={popup}>
                     <p>
                         { user.loggedIn ? <span><b>Id:</b> {item.LOKAL_ID} <br/></span> : null}
                         

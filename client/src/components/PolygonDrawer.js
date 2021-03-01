@@ -7,7 +7,7 @@ function PolygonDrawer ({onUpdate}){
     useEffect(() => {
         const timer = setTimeout(() => onUpdate(corners), 2000);
         return () => clearTimeout(timer);
-      }, [corners]);
+      }, [corners, onUpdate]);
 
     useMapEvents({
         click(e) {

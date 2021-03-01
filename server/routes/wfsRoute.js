@@ -107,7 +107,6 @@ router.patch('/split/:id/:coords', getTrack, async (req, res) => {
     let split = req.params.coords.split(',').map(item => Number(item))
     //copy original line coordinates
     let coordinates = [...res.track.coordinates]
-    console.log(coordinates);
     // find splittig coordinate
     let index = coordinates.findIndex((item) => (item[0] === split[0] && item[1] === split[1]))
 
@@ -140,8 +139,6 @@ router.patch('/split/:id/:coords', getTrack, async (req, res) => {
 // Updating one track
 router.patch('/:id', getTrack, async (req, res) => {
   if (req.session.loggedIn) {
-    console.log(req.body)
-    console.log(req.body.MIDL_STENGT);
     if ((req.body.MIDL_STENGT != null) || (req.body.KOMMENTAR != null)) {
       try {
         const updatedTrack = await db.tracks.update(req.body, {

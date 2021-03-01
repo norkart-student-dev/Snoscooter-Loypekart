@@ -268,7 +268,6 @@ class App extends Component {
   }
 
   async movePoi (id, latlng){
-    console.log(id,latlng)
     let data = {"location": { 
       "type": "Point", 
       "coordinates": [latlng.lat, latlng.lng]
@@ -295,7 +294,6 @@ class App extends Component {
       const res = await axios.post('/poi', data);
       if(res.status === 201) {
         const data = await this.getPois();
-        console.log(data)
         this.setState({poi_data: data})
       }
       else if(res.status === 403) {
@@ -317,15 +315,12 @@ class App extends Component {
         editingTrack: false,
         selectedTracks: selected});
     }
-    console.log(data)
     if(data !== undefined) {
       let requests = this.state.selectedTracks.map(track => (
         axios.patch('/tracks/' + track.id, data))
       );
       try {
         const res = await Promise.all(requests);
-        console.log(res);
-        console.log(res.status)
         if(res[0].status === 201){
           const data = await this.getTracks();
           this.setState({track_data: data});
@@ -390,7 +385,7 @@ class App extends Component {
     
     let selected = []
     this.state.track_data.forEach(item => {
-      //Projections. proj4 flips the coordinates for some unknown reason. I flip them back.
+      //Projections. proj4 flips the coordinates for some unknown reason. This flips them back.
       let coordinates = [...item.coordinates]
       coordinates = coordinates.map((item,index) => (proj4(
           '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
@@ -411,7 +406,6 @@ class App extends Component {
       }
     });
     this.setState({selectedTracks: selected})
-    console.log(selected)
   }
 
   setDrawing(val){

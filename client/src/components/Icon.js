@@ -1,9 +1,4 @@
 import Leaflet from 'leaflet';
-import ParkingImage from '../assets/Parkering.jpg';
-import ReststopImage from '../assets/Rasteplass.jpg';
-import TentImage from '../assets/Teltplass.jpg';
-import FoodstopImage from '../assets/Spisested.jpg';
-import ReststopWcImage from '../assets/Rasteplass_wc.jpg';
 
 export default function Icon(item, image){
     const markerHtmlStyles = `
