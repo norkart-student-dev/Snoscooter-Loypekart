@@ -3,7 +3,7 @@ module.exports = {
     USER: "root",
     PASSWORD: "1234",
     DB: "scooterLoyperDB",
-    dialect: "mysql",
+    dialect: "mariadb",
     pool: {
       max: 5,
       min: 0,
