@@ -16,10 +16,17 @@ import UserContext from '../Context';
 
         let coordinates = [...item.coordinates]
         
-        coordinates = coordinates.map((item,index) => (proj4(
-            '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
-            '+proj=longlat +datum=WGS84 +no_defs ', 
-            item)));
+        // coordinates = coordinates.map((item,index) => (proj4(
+        //     '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
+        //     '+proj=longlat +datum=WGS84 +no_defs ', 
+            // item)));
+
+        let old_coordinates = [...item.coordinates]
+    
+        old_coordinates.map((item,index) => {
+            let x = parseFloat(item[0]).toFixed(2)
+            let y = parseFloat(item[1]).toFixed(2)
+            proj4('+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', '+proj=longlat +datum=WGS84 +no_defs ', [x, y])});
 
         coordinates = coordinates.map((item,index) => ([item[1], item[0]]))
 
