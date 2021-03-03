@@ -92,7 +92,6 @@ router.get('/reload', async (req, res) => {
 router.get('/', async (req, res) => {  
   try {
     const tracks = await db.tracks.findAll()
-    console.log(tracks)
     res.status(200).json(tracks)
 
   }
