@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "concurrently": "^5.3.0"
+    "concurrently": "^5.3.0",
+    "mariadb": "^2.5.3"
   },
   "scripts": {
     "install_all": "npm i && cd client && npm i && cd ../server && npm i",
