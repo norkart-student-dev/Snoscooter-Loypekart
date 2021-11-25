@@ -9,25 +9,25 @@ async function loadTracks(reloading = false) {
   try {
     const url = wfs_scooter_url + "&outputFormat=" + output_format;
     let config = {
-      method : "get",
-      url : url
+      method: "get",
+      url: url
     }
     const response = await axios(config);
     await response.data.features.map((item, index) => {
       db.tracks.findOrCreate({
-        where :  {
-          LOKAL_ID : item.properties.LOKALID
+        where: {
+          LOKAL_ID: item.properties.LOKALID
         },
-        defaults : {
-          LOKAL_ID : item.properties.LOKALID,
-          MIDL_STENGT : false,
+        defaults: {
+          LOKAL_ID: item.properties.LOKALID,
+          MIDL_STENGT: item.properties.MIDL_STENGT,
           coordinates: item.geometry.coordinates,
-          KOMMENTAR : item.properties.KOMMENTAR,
+          KOMMENTAR: item.properties.KOMMENTAR,
         }
       })
     })
-  } catch(err) {
-      //console.log(err)
+  } catch (err) {
+    //console.log(err)
   }
 }
 
@@ -35,44 +35,44 @@ async function reloadTracks() {
   try {
     const url = wfs_scooter_url + "&outputFormat=" + output_format;
     let config = {
-      method : "get",
-      url : url
+      method: "get",
+      url: url
     }
 
     const response = await axios(config);
 
     await response.data.features.map((item, index) => {
-        db.tracks.findOrCreate({
-          where :  {
-            LOKAL_ID : item.properties.LOKALID
-          },
-          defaults : {
-            LOKAL_ID : item.properties.LOKALID,
-            MIDL_STENGT : false,
-            coordinates: item.geometry.coordinates,
-            KOMMENTAR : item.properties.KOMMENTAR,
-          }
-        })
-    })    
+      db.tracks.findOrCreate({
+        where: {
+          LOKAL_ID: item.properties.LOKALID
+        },
+        defaults: {
+          LOKAL_ID: item.properties.LOKALID,
+          MIDL_STENGT: false,
+          coordinates: item.geometry.coordinates,
+          KOMMENTAR: item.properties.KOMMENTAR,
+        }
+      })
+    })
 
-    const dbLOKAL_IDs = await db.tracks.findAll({attributes : ['LOKAL_ID']})
+    const dbLOKAL_IDs = await db.tracks.findAll({ attributes: ['LOKAL_ID'] })
     let dbIDs = []
-    dbLOKAL_IDs.forEach(e => {dbIDs.push(e.LOKAL_ID)})
+    dbLOKAL_IDs.forEach(e => { dbIDs.push(e.LOKAL_ID) })
 
     let resIDs = []
-    response.data.features.forEach(e => {resIDs.push(e.properties.LOKALID)})
+    response.data.features.forEach(e => { resIDs.push(e.properties.LOKALID) })
 
     let outdatedTrackIDs = dbIDs.filter(x => !resIDs.includes(x)) //tracks in db, but not in response
 
     outdatedTrackIDs.forEach(id => {
       db.tracks.destroy({
-        where : {
-          LOKAL_ID : id
+        where: {
+          LOKAL_ID: id
         }
       })
     })
   }
-  catch(error) {
+  catch (error) {
     console.log(error)
   }
 }
@@ -83,13 +83,13 @@ router.get('/reload', async (req, res) => {
     res.status(200).send()
     console.log("successfully updated tracks")
   }
-  catch(error) {
+  catch (error) {
     res.status(err.response).send()
   }
 })
 
 // Getting all tracks
-router.get('/', async (req, res) => {  
+router.get('/', async (req, res) => {
   try {
     const tracks = await db.tracks.findAll()
     res.status(200).json(tracks)
@@ -110,23 +110,23 @@ router.patch('/split/:id/:coords', getTrack, async (req, res) => {
     // find splittig coordinate
     let index = coordinates.findIndex((item) => (item[0] === split[0] && item[1] === split[1]))
 
-    res.track.coordinates = coordinates.slice(0, index+1)
+    res.track.coordinates = coordinates.slice(0, index + 1)
 
     const track1 = await db.tracks.create({
-      coordinates : res.track.coordinates,
-      MIDL_STENGT : null,
-      KOMMENTAR : "Splittet fra: " + res.track.LOKAL_ID,
-      LOKAL_ID : res.track.LOKAL_ID,
-      SPLITTED : true
+      coordinates: res.track.coordinates,
+      MIDL_STENGT: null,
+      KOMMENTAR: "Splittet fra: " + res.track.LOKAL_ID,
+      LOKAL_ID: res.track.LOKAL_ID,
+      SPLITTED: true
     })
 
 
     const track2 = await db.tracks.create({
-      coordinates : coordinates.slice(index, coordinates.length),
-      MIDL_STENGT : null,
-      KOMMENTAR : "Splittet fra: " + res.track.LOKAL_ID,
-      LOKAL_ID : res.track.LOKAL_ID,
-      SPLITTED : true
+      coordinates: coordinates.slice(index, coordinates.length),
+      MIDL_STENGT: null,
+      KOMMENTAR: "Splittet fra: " + res.track.LOKAL_ID,
+      LOKAL_ID: res.track.LOKAL_ID,
+      SPLITTED: true
     })
 
     res.status(201).json([track1, track2])
@@ -142,14 +142,14 @@ router.patch('/:id', getTrack, async (req, res) => {
     if ((req.body.MIDL_STENGT != null) || (req.body.KOMMENTAR != null)) {
       try {
         const updatedTrack = await db.tracks.update(req.body, {
-          where : {
-            id : res.track.id
+          where: {
+            id: res.track.id
           }
         })
         res.status(201).json(updatedTrack)
-      } catch(err) {
+      } catch (err) {
         console.log(err)
-        res.status(400).json({ message: 'Could not update track properties.'})
+        res.status(400).json({ message: 'Could not update track properties.' })
       }
     }
 
@@ -171,19 +171,19 @@ router.delete('/:id', getTrack, async (req, res) => {
       console.log("THE CURREN LOCAL ID IS " + current_lokal_id)
 
       const tracksToDelete = await db.tracks.destroy({
-        where : {
-          LOKAL_ID : current_lokal_id,
-          SPLITTED : true
+        where: {
+          LOKAL_ID: current_lokal_id,
+          SPLITTED: true
         }
-      })      
+      })
 
       console.log("deleting tracks" + tracksToDelete)
-      
+
       res.status(201).json({ message: 'Track deleted' })
-    } 
-    catch(err) {
+    }
+    catch (err) {
       console.log(err)
-      res.status(500).json({ message: 'Could not delete the specified track.'})
+      res.status(500).json({ message: 'Could not delete the specified track.' })
     }
   }
   else {
@@ -198,9 +198,9 @@ async function getTrack(req, res, next) {
     console.log("Getting track by ID: " + req.params.id)
     track = await db.tracks.findByPk(req.params.id)
     if (track == null) {
-      return res.status(404).json({ message: 'Cant find track'})
+      return res.status(404).json({ message: 'Cant find track' })
     }
-  } catch(err){
+  } catch (err) {
     // console.log(err)
     console.log("error getting tracks")
     return res.status(500).json({ message: 'Could not find track with id: ' + req.params.id })
@@ -210,4 +210,4 @@ async function getTrack(req, res, next) {
   next()
 }
 
-module.exports = {router, loadTracks}
+module.exports = { router, loadTracks }

@@ -8,8 +8,16 @@ import UserContext from '../Context';
 import PoiMarker from './PoiMarker';
 import TrackMarker from './TrackMarker';
 import PolygonDrawer from './PolygonDrawer';
+import usePois from '../Hooks/usePois';
+import useTracks from '../Hooks/useTracks';
 
-const RenderMap = React.memo(({createPoi, editPoi, movePoi, deletePoi, poi_data, editTrack, deleteTrack, onSelectionUpdate, track_data, loggedIn, splitTrack, selectedTracks, drawing}) => {
+
+function Map({ createPoi, editPoi, movePoi, deletePoi, editTrack, deleteTrack, splitTrack, onSelectionUpdate, selectedTracks, drawing }) {
+    const pois = usePois();
+    const tracks = useTracks();
+    const user = useContext(UserContext);
+
+
     return (
         <MapContainer className='Map' center={[65.43662791576793, 13.401348570518797]} zoom={8} zoomControl={false}>
 
@@ -18,15 +26,15 @@ const RenderMap = React.memo(({createPoi, editPoi, movePoi, deletePoi, poi_data,
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
-            {loggedIn && <ContextMenu createPoi={createPoi}/>}
-            {loggedIn && drawing && <PolygonDrawer onUpdate={onSelectionUpdate}/>}
+            {<ContextMenu createPoi={createPoi} />}
+            {drawing && <PolygonDrawer onUpdate={onSelectionUpdate} />}
 
             <MarkerClusterGroup>
-                {poi_data !== undefined && 
-                    poi_data.map((item, index) => (
-                        <PoiMarker 
-                            key={item.id} 
-                            item={item} 
+                {!pois.isLoading &&
+                    pois.data.map((item, index) => (
+                        <PoiMarker
+                            key={item.id}
+                            item={item}
                             editPoi={editPoi}
                             movePoi={movePoi}
                             deletePoi={deletePoi}
@@ -36,8 +44,8 @@ const RenderMap = React.memo(({createPoi, editPoi, movePoi, deletePoi, poi_data,
             </MarkerClusterGroup>
 
 
-            {track_data.length !== 0 &&
-                track_data.map((item, index) => (
+            {!tracks.isLoading &&
+                tracks.data.map((item, index) => (
                     <TrackMarker
                         key={item.id}
                         item={item}
@@ -46,27 +54,10 @@ const RenderMap = React.memo(({createPoi, editPoi, movePoi, deletePoi, poi_data,
                         deleteTrack={deleteTrack}
                         selectedTracks={selectedTracks}
                     />
-                ))  
+                ))
             }
         </MapContainer>
     )
-});
-
-export default function Map({createPoi, editPoi, movePoi, deletePoi, poi_data, editTrack, deleteTrack, splitTrack, onSelectionUpdate, track_data, selectedTracks, drawing}) {
-    const user = useContext(UserContext);
-    return <RenderMap
-                createPoi={createPoi}
-                editPoi={editPoi}
-                movePoi={movePoi}
-                deletePoi={deletePoi}
-                poi_data={poi_data}
-                editTrack={editTrack}
-                deleteTrack={deleteTrack}
-                splitTrack={splitTrack}
-                onSelectionUpdate={onSelectionUpdate}
-                track_data={track_data}
-                loggedIn={user.loggedIn}
-                selectedTracks={selectedTracks}
-                drawing={drawing}>
-            </RenderMap>
 }
+
+export default Map;

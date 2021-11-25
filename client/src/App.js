@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import './App.css';
 import Map from './components/Map';
@@ -7,128 +7,93 @@ import TrackDialog from './components/TrackDialog'
 import { UserProvider } from './Context'
 import SideMenu from './components/SideMenu';
 import LoginDialog from './components/LoginDialog';
-import ServerConnection from './ServerConnection';
+import { isLoggedIn } from './ServerConnection';
 import proj4 from 'proj4';
 import booleanContains from '@turf/boolean-contains';
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      creatingPoi: null,
-      currentLocation: { lat: 60.0084857, lng:11.0648648 },
+function App() {
+  const [creatingPoi, setCreatingPoi] = React.useState(null);
+  const [currentLocation, setCurrentLocation] = React.useState({ lat: 60.0084857, lng: 11.0648648 });
+  const [showLogin, setShowLogin] = React.useState(false);
+  const [currentUser, setCurrentUser] = React.useState("");
+  const [poiData, setPoiData] = React.useState([]);
+  const [trackData, setTrackData] = React.useState([]);
+  const [editingTrack, setEditingTrack] = React.useState(false);
+  const [selectedTracks, setSelectedTracks] = React.useState([]);
+  const [drawing, setDrawing] = React.useState(false);
+  const [loggedIn, setLoggedIn] = React.useState(false);
 
-      showLogin : false,
-      currentUser : "",
-      poi_data: [],
-      track_data: [],
-      editingTrack: false,
-      selectedTracks: [],
-      drawing: false
-    };
-
-    this.user = {
-      loggedIn: false //should default to false in production version!
-    }
-
-    this.server = new ServerConnection();
-    this.createPoi = this.createPoi.bind(this);
-    this.editPoi = this.editPoi.bind(this);
-    this.movePoi = this.movePoi.bind(this);
-    this.editTrack = this.editTrack.bind(this);
-    this.splitTrack = this.splitTrack.bind(this);
-    this.selectTracks = this.selectTracks.bind(this);
-    this.deletePoi = this.deletePoi.bind(this);
-    this.deleteTrack = this.deleteTrack.bind(this);
-    this.openLoginDialog = this.openLoginDialog.bind(this);
-    this.closeLoginDialog = this.closeLoginDialog.bind(this);
-    this.handleLogin = this.handleLogin.bind(this);
-    this.setDrawing = this.setDrawing.bind(this);
-    this.forceReloadDB = this.forceReloadDB.bind(this);
-  }
-
-  componentDidMount() {
-    this.getPois().then(data => this.setState({poi_data: data}));
-    this.getTracks().then(data => this.setState({track_data: data}));
-    this.server.isLoggedIn().then(val => this.user.loggedIn = val);
-  }
-
+  React.useEffect(() => {
+    isLoggedIn().then(val => setLoggedIn(val));
+  })
+  /*
   componentDidUpdate() {
     this.server.isLoggedIn().then(val => this.user.loggedIn = val);
   }
+  */
 
-  render(){
-    return(
-      <UserProvider value={this.user}>
-        <SideMenu
-          openLoginMenu = {this.openLoginDialog}
-          closeLoginDialog = {this.closeLoginDialog}
-          currentUser = {this.state.currentUser}
-          setDrawing = {this.setDrawing}
-          forceReloadDB = {this.forceReloadDB}
-        ></SideMenu>
-        <Map 
-          poi_data={this.state.poi_data}
-          track_data={this.state.track_data} 
-          createPoi={this.createPoi} 
-          creatingPoi={this.state.creatingPoi} 
-          editPoi={this.editPoi}
-          movePoi={this.movePoi}
-          deletePoi={this.deletePoi}
-          editTrack={this.editTrack}
-          deleteTrack={this.deleteTrack}
-          splitTrack={this.splitTrack}
-          onSelectionUpdate={this.selectTracks}
-          selectedTracks={this.state.selectedTracks}
-          drawing={this.state.drawing}
-        />
+  return (
+    <>
+      <SideMenu
+        openLoginMenu={openLoginDialog}
+        closeLoginDialog={closeLoginDialog}
+        setDrawing={setDrawing}
+        forceReloadDB={forceReloadDB}
+      ></SideMenu>
+      <Map
+        createPoi={createPoi}
+        creatingPoi={creatingPoi}
+        editPoi={editPoi}
+        movePoi={movePoi}
+        deletePoi={deletePoi}
+        editTrack={editTrack}
+        deleteTrack={deleteTrack}
+        splitTrack={splitTrack}
+        onSelectionUpdate={selectTracks}
+        selectedTracks={selectedTracks}
+        drawing={drawing}
+      />
 
-        {this.state.creatingPoi && <NewPoiDialog 
-          onDone={this.createPoi} 
-          coords={this.state.creatingPoi}
-          selectedPoi={{name:'', type:'Parkeringsplass'}}
+      {creatingPoi && <NewPoiDialog
+        onDone={createPoi}
+        coords={creatingPoi}
+        selectedPoi={{ name: '', type: 'Parkeringsplass' }}
+      />}
+
+      {editingTrack &&
+        <TrackDialog
+          onDone={editTrack}
+          selectedTracks={selectedTracks}
         />}
 
-        {this.state.editingPoi && <NewPoiDialog 
-          onDone={this.editPoi} 
-          selectedPoi={this.state.poi_data.filter((v) => (v.id===this.state.editingPoi))[0]}
-        />}
 
-        {this.state.editingTrack && 
-          <TrackDialog
-            onDone={this.editTrack}
-            selectedTracks={this.state.selectedTracks}
-          />}
+      {showLogin &&
+        <LoginDialog
+          handleLogin={handleLogin}
+          closeLoginDialog={closeLoginDialog}
+          openLoginDialog={openLoginDialog}>
+        </LoginDialog>
+      }
+    </>
+  );
 
-
-        {this.state.showLogin &&
-          <LoginDialog
-            handleLogin={this.handleLogin}
-            closeLoginDialog={this.closeLoginDialog}
-            openLoginDialog={this.openLoginDialog}>
-          </LoginDialog>
-        }
-      </UserProvider>
-    );
-  }
-
-  async handleLogin(username, password) {
-    if(username === undefined || username === null || username ==="") {
+  async function handleLogin(username, password) {
+    if (username === undefined || username === null || username === "") {
       alert("Ingen brukernavn oppgitt, prøv igjen");
     }
 
-    else if (password === undefined || password === null || password ==="") {
+    else if (password === undefined || password === null || password === "") {
       alert("Ingen passord oppgitt, prøv igjen");
     }
-    
+
     else {
       const loginResponse = await this.server.login(username, password);
-      if(loginResponse.data === true) {
+      if (loginResponse.data === true) {
         this.setState(prevState => ({
-          creatingPoi : prevState.creatingPoi,
-          currentLocation : prevState.currentLocation,
-          showLogin : false,
-          currentUser : username
+          creatingPoi: prevState.creatingPoi,
+          currentLocation: prevState.currentLocation,
+          showLogin: false,
+          currentUser: username
         }));
         this.user.loggedIn = true;
       }
@@ -136,17 +101,17 @@ class App extends Component {
         this.openLoginDialog();
 
       }
-      else if(loginResponse.data === false) {
+      else if (loginResponse.data === false) {
         alert("Feil brukernavn eller passord")
       }
-      
+
       this.setState({}) //don't remove this: part of performance bugfix issue#21, required to allow contextmenu popup to appear
     }
   }
 
-  async openLoginDialog() {
-    if(this.user.loggedIn) {
-      if(window.confirm("Du er allerede logget inn, trykk ok for å logge av")) {
+  async function openLoginDialog() {
+    if (this.user.loggedIn) {
+      if (window.confirm("Du er allerede logget inn, trykk ok for å logge av")) {
         console.log("logging off");
         const logout = await this.server.logout();
         if (logout === true) {
@@ -160,44 +125,18 @@ class App extends Component {
       }
     } else {
       this.setState({
-        showLogin : true
+        showLogin: true
       })
     }
   }
 
-  async closeLoginDialog() {
+  async function closeLoginDialog() {
     this.setState({
-      showLogin : false
+      showLogin: false
     })
   }
 
-  // Request a list of all PoI's from the backend
-  async getPois(){
-    try{
-      const res = await axios.get('/poi');
 
-      let data = res.data;
-      return(data);
-    }
-    catch(err) {
-      alert("Det har oppstått et problem og punktdata kan desverre ikke vises, last inn siden eller prøv igjen senere.")
-      return [];
-    }
-  }
-
-  async getTracks() {
-    try {
-      const res = await axios.get('/tracks');
-
-      let data = res.data;
-      return(data);
-    }
-    catch(err) {
-      console.log(err);
-      alert("Det har oppstått et problem og løypedata kan desverre ikke leses av, last inn siden på nytt eller prøv igjen senere.")
-      return [];
-    }
-  }
 
   // async getTracksSource(){
   //   try {
@@ -214,52 +153,52 @@ class App extends Component {
   //   }
   // }
 
-  async deletePoi(id) {
+  async function deletePoi(id) {
     const res = await axios.delete('/poi/' + id);
-    if(res.status === 201){
+    if (res.status === 201) {
       const data = await this.getPois();
-      this.setState({poi_data: data})
+      this.setState({ poi_data: data })
     }
-    else if(res.status === 403) {
+    else if (res.status === 403) {
       alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
     } else {
-      
+
       alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
     }
   }
 
-  async deleteTrack(id) {
+  async function deleteTrack(id) {
     try {
       const res = await axios.delete('/tracks/' + id);
-      if(res.status === 201){
+      if (res.status === 201) {
         const data = await this.getTracks();
-        this.setState({track_data: data})
+        this.setState({ track_data: data })
       }
-      else if(res.status === 403) {
+      else if (res.status === 403) {
         alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
       }
       else {
         alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
       }
-    } catch(err) {
+    } catch (err) {
       console.log(err.message)
     }
   }
 
   // Value is either null or the id of the point that was clicked
-  async editPoi(value, data){
-    this.setState({editingPoi: value})
-    if (value !== null){
-      this.setState({selectedPoi: value})
+  async function editPoi(value, data) {
+    this.setState({ editingPoi: value })
+    if (value !== null) {
+      this.setState({ selectedPoi: value })
     }
 
-    if(data !== undefined){
+    if (data !== undefined) {
       const res = await axios.patch('/poi/' + this.state.selectedPoi, data);
-      if(res.status === 201) {
+      if (res.status === 201) {
         const data = await this.getPois();
-        this.setState({poi_data: data})
+        this.setState({ poi_data: data })
       }
-      else if(res.status === 403) {
+      else if (res.status === 403) {
         alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
       } else {
         alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
@@ -267,36 +206,38 @@ class App extends Component {
     }
   }
 
-  async movePoi (id, latlng){
-    let data = {"location": { 
-      "type": "Point", 
-      "coordinates": [latlng.lat, latlng.lng]
-    }}
+  async function movePoi(id, latlng) {
+    let data = {
+      "location": {
+        "type": "Point",
+        "coordinates": [latlng.lat, latlng.lng]
+      }
+    }
 
     const res = await axios.patch('/poi/' + id, data);
-      if(res.status === 201) {
-        const data = await this.getPois();
-        this.setState({poi_data: data})
-      }
-      else if(res.status === 403) {
-        alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
-      } else {
-        alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
-      }
+    if (res.status === 201) {
+      const data = await this.getPois();
+      this.setState({ poi_data: data })
+    }
+    else if (res.status === 403) {
+      alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
+    } else {
+      alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
+    }
   }
 
   // Controls wether we are currently making a new PoI and passes data to the backend when done
   // value is either null or an array with latitude, longitude
-  async createPoi(value, data){
-    this.setState({creatingPoi: value})
+  async function createPoi(value, data) {
+    this.setState({ creatingPoi: value })
 
-    if(data !== undefined){
+    if (data !== undefined) {
       const res = await axios.post('/poi', data);
-      if(res.status === 201) {
+      if (res.status === 201) {
         const data = await this.getPois();
-        this.setState({poi_data: data})
+        this.setState({ poi_data: data })
       }
-      else if(res.status === 403) {
+      else if (res.status === 403) {
         alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
       } else {
         alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
@@ -305,33 +246,35 @@ class App extends Component {
   }
 
   // Value is either null or the id of the track that was clicked
-  async editTrack(selected, data){
-    if (selected.length !== 0){
+  async function editTrack(selected, data) {
+    if (selected.length !== 0) {
       this.setState({
         editingTrack: true,
-        selectedTracks: selected});
+        selectedTracks: selected
+      });
     } else {
       this.setState({
         editingTrack: false,
-        selectedTracks: selected});
+        selectedTracks: selected
+      });
     }
-    if(data !== undefined) {
+    if (data !== undefined) {
       let requests = this.state.selectedTracks.map(track => (
         axios.patch('/tracks/' + track.id, data))
       );
       try {
         const res = await Promise.all(requests);
-        if(res[0].status === 201){
+        if (res[0].status === 201) {
           const data = await this.getTracks();
-          this.setState({track_data: data});
+          this.setState({ track_data: data });
         }
-        else if(res.status === 403) {
+        else if (res.status === 403) {
           alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
         } else {
           alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
         }
       }
-      catch(error) {
+      catch (error) {
         console.log("Error when processing track promises")
         console.log(error)
         alert("Noe gikk galt under valg av løyper. Prøv å utvide tegneområdet.")
@@ -341,23 +284,23 @@ class App extends Component {
     }
   }
 
-  async splitTrack(item, coords){
+  async function splitTrack(item, coords) {
     let current = null;
 
     item.coordinates.forEach(element => {
       let converted = proj4(
-        '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
-        '+proj=longlat +datum=WGS84 +no_defs ', 
+        '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ',
+        '+proj=longlat +datum=WGS84 +no_defs ',
         element);
       converted = [converted[1], converted[0]]
       let convertedCurr = proj4(
-        '++proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
-        '+proj=longlat +datum=WGS84 +no_defs ', 
+        '++proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ',
+        '+proj=longlat +datum=WGS84 +no_defs ',
         current);
-        convertedCurr = [convertedCurr[1], convertedCurr[0]]
-      if(current === null){
+      convertedCurr = [convertedCurr[1], convertedCurr[0]]
+      if (current === null) {
         current = element
-      } else if(this.calcCrow(converted[0], converted[1], coords.lat, coords.lng) < this.calcCrow(convertedCurr[0], convertedCurr[1], coords.lat, coords.lng)) {
+      } else if (this.calcCrow(converted[0], converted[1], coords.lat, coords.lng) < this.calcCrow(convertedCurr[0], convertedCurr[1], coords.lat, coords.lng)) {
         current = element
       }
     });
@@ -365,16 +308,16 @@ class App extends Component {
     const res = await axios.patch('/tracks/split/' + item.id + '/' + current)
     if (res.status === 201) {
       const data = await this.getTracks();
-      this.setState({track_data: data})
+      this.setState({ track_data: data })
     }
-    else if(res.status === 403) {
+    else if (res.status === 403) {
       alert("Det ser ut som du har blitt logget ut, logg in for å gjøre endringer");
     } else {
       alert("Noe gikk galt, last inn siden på nytt eller prøv igjen senere");
     }
   }
 
-  selectTracks(bounds){
+  function selectTracks(bounds) {
     bounds = {
       type: "Feature",
       geometry: {
@@ -382,17 +325,17 @@ class App extends Component {
         coordinates: [bounds]
       }
     }
-    
+
     let selected = []
     this.state.track_data.forEach(item => {
       //Projections. proj4 flips the coordinates for some unknown reason. This flips them back.
       let coordinates = [...item.coordinates]
-      coordinates = coordinates.map((item,index) => (proj4(
-          '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ', 
-          '+proj=longlat +datum=WGS84 +no_defs ', 
-          item)));
+      coordinates = coordinates.map((item, index) => (proj4(
+        '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ',
+        '+proj=longlat +datum=WGS84 +no_defs ',
+        item)));
 
-      coordinates = coordinates.map((item,index) => ([item[1], item[0]]))
+      coordinates = coordinates.map((item, index) => ([item[1], item[0]]))
       let check = {
         type: "Feature",
         geometry: {
@@ -401,33 +344,25 @@ class App extends Component {
         }
       }
 
-      if(booleanContains(bounds, check)){
+      if (booleanContains(bounds, check)) {
         selected.push(item)
       }
     });
-    this.setState({selectedTracks: selected})
+    this.setState({ selectedTracks: selected })
   }
 
-  setDrawing(val){
-    if(val === true){
-      this.setState({drawing: val})
-    } else {
-      this.setState({editingTrack: true, drawing: val})
-    }
-  }
-
-  async forceReloadDB() {
+  async function forceReloadDB() {
     if (window.confirm("Trykk ok for å laste inn oppdaterte løypedata, utdaterte løyper vil bli slettet.")) {
       try {
         const resReload = await axios.get('/tracks/reload');
         if (resReload.status === 200) {
-          this.getTracks().then(data => this.setState({track_data: data}));
+          this.getTracks().then(data => this.setState({ track_data: data }));
         }
         else {
           throw new Error('Det oppsto en feil under lasting av løyper. Prøv igjen senere.')
         }
       }
-      catch(error) {
+      catch (error) {
         console.log(error);
         alert("Det oppsto en feil under oppdatering av løyper.");
       }
@@ -435,25 +370,23 @@ class App extends Component {
   }
 
   //This function takes in latitude and longitude of two locations and returns the distance between them as the crow flies (in km)
-  calcCrow(lat1, lon1, lat2, lon2) 
-  {
+  function calcCrow(lat1, lon1, lat2, lon2) {
     var R = 6371; // km
-    var dLat = this.toRad(lat2-lat1);
-    var dLon = this.toRad(lon2-lon1);
+    var dLat = this.toRad(lat2 - lat1);
+    var dLon = this.toRad(lon2 - lon1);
     lat1 = this.toRad(lat1);
     lat2 = this.toRad(lat2);
 
-    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     var d = R * c;
     return d;
   }
 
   // Converts numeric degrees to radians
-  toRad(Value) 
-  {
-      return Value * Math.PI / 180;
+  function toRad(Value) {
+    return Value * Math.PI / 180;
   }
 }
 
