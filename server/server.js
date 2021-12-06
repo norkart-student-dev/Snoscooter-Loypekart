@@ -21,14 +21,14 @@ app.use(cookieSession({
 
 app.use(express.json())
 
-const poiRouter = require('./routes/poiRoute')
-app.use('/poi', poiRouter)
+const poiController = require('./routes/PoiController')
+app.use('/poi', poiController)
 
 const LoginRouter = require('./routes/loginRoute');
 app.use('/loginRoute', LoginRouter);
 
-const trackRouter = require('./routes/TrackController');
-app.use('/tracks', trackRouter.router)
+const trackController = require('./routes/TrackController');
+app.use('/tracks', trackController.router)
 
 let db;
 async function loadTrackData(db, router) {
@@ -47,7 +47,7 @@ mysql.createConnection({
   connection.query('CREATE DATABASE IF NOT EXISTS ' + dbConfig.DB).then(() => {
     // Safe to use sequelize now
     console.log('Database created!')
-    loadTrackData(db, trackRouter)
+    loadTrackData(db, trackController)
   })
 })
 

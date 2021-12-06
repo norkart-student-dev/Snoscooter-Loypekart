@@ -138,25 +138,19 @@ router.patch('/split/:id/:coords', getTrack, async (req, res) => {
 
 // Updating one track
 router.patch('/:id', getTrack, async (req, res) => {
-  if (req.session.loggedIn) {
-    if ((req.body.MIDL_STENGT != null) || (req.body.KOMMENTAR != null)) {
-      try {
-        const updatedTrack = await db.tracks.update(req.body, {
-          where: {
-            id: res.track.id
-          }
-        })
-        res.status(201).json(updatedTrack)
-      } catch (err) {
-        console.log(err)
-        res.status(400).json({ message: 'Could not update track properties.' })
-      }
+  console.log(req)
+  if ((req.body.MIDL_STENGT != null) || (req.body.KOMMENTAR != null)) {
+    try {
+      const updatedTrack = await db.tracks.update(req.body, {
+        where: {
+          id: res.track.id
+        }
+      })
+      res.status(201).json(updatedTrack)
+    } catch (err) {
+      console.log(err)
+      res.status(400).json({ message: 'Could not update track properties.' })
     }
-
-
-  }
-  else {
-    res.status(403).send();
   }
 })
 

@@ -1,11 +1,14 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
+import useTracks from '../Hooks/useTracks';
 
-export default function TrackDialog({onDone, selectedTracks}){
+export default function TrackDialog({ onDone, selectedTracks }) {
+    console.log("render dialog")
+    const { updateTrack } = useTracks();
     const [closed, setClosed] = useState(false);
     const [comment, setComment] = useState('');
 
     useEffect(() => {
-        if(selectedTracks.length === 1){
+        if (selectedTracks.length === 1) {
             setClosed(selectedTracks[0].MIDL_STENGT)
             setComment(selectedTracks[0].KOMMENTAR)
         }
@@ -18,12 +21,19 @@ export default function TrackDialog({onDone, selectedTracks}){
         setComment(event.target.value)
     }
 
-    let onConfirm = () => onDone([], { 
-            "MIDL_STENGT": closed,
-            "KOMMENTAR": comment
-        })
+    function onConfirm() {
+        selectedTracks.forEach(track => {
+            updateTrack.mutate({
+                id: track.id,
+                MIDL_STENGT: closed,
+                KOMMENTAR: comment
+            })
+        });
 
-    return(
+        onDone()
+    }
+
+    return (
         <div className='NewPoiDialog'>
             <div className='NewPoiDialog-inner'>
                 <select className='NewPoiDialog-items' value={closed} onChange={closedOnChange}>
@@ -33,9 +43,9 @@ export default function TrackDialog({onDone, selectedTracks}){
 
                 <textarea value={comment} onChange={commentOnChange}></textarea>
 
-                <button className='NewPoiDialog-button' 
+                <button className='NewPoiDialog-button'
                     onClick={() => onConfirm()}>Bekreft</button>
-                <button className='NewPoiDialog-button' onClick={() => onDone([])}>Avbryt</button>
+                <button className='NewPoiDialog-button' onClick={() => onDone()}>Avbryt</button>
             </div>
         </div>
     )
