@@ -2,21 +2,14 @@ import axios from 'axios';
 import proj4 from 'proj4';
 
 
-export async function logIn(username, password) {
-    try {
-        const res = await axios.post('/loginRoute/login', { username: username, password: password });
-        return res;
-    }
-    catch (error) {
-        console.log("An error occurred when attempting to login: ");
-        console.log(error);
-        return "invalid login";
-    }
+export async function login(data) {
+    const res = await axios.post('/loginRoute/login', data);
+    return res;
 }
 
 export async function logout() {
     try {
-        const res = await axios.post('/loginRoute/logout');
+        const res = await axios.get('/loginRoute/logout');
         if (res.status === 200) {
             return true;
         } else {

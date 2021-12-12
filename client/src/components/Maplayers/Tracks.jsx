@@ -1,18 +1,23 @@
+import { useCallback } from "react";
+import { useMap } from "react-leaflet";
 import useTracks from "../../Hooks/useTracks";
 import TrackDialog from "../TrackDialog";
 import TrackMarker from "../TrackMarker";
 
-
-function Tracks({ setModal }) {
+function Tracks({ setModal, selectedTracks }) {
+    const map = useMap();
     const { tracks, deleteTrack } = useTracks();
 
-    function onDeleteTrack(id) {
+    const onDeleteTrack = useCallback((id) => {
         deleteTrack.mutate(id);
-    }
-    function onUpdateTrack(data) {
+    }, [])
+
+    const onUpdateTrack = useCallback((data) => {
         setModal(<TrackDialog onDone={() => setModal(null)} selectedTracks={data} />)
-    }
+    }, [])
+
     console.log("render Tracks")
+    console.log(map)
     return (
         <>
             {tracks.isLoading ? null :

@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Popup, Polyline, useMapEvents } from 'react-leaflet';
 import proj4 from 'proj4';
 import useAuthorization from '../Hooks/useAuthorization';
 
 // draws the relevant track for the item given 
-export default function TrackMarker({ item, deleteTrack, updateTrack }) {
+function TrackMarker({ item, deleteTrack, updateTrack }) {
     console.log("render Trackmarker")
-    const isLoggedIn = useAuthorization()
+    const isLoggedIn = true
     const popup = React.createRef()
 
     const closePopup = () => {
@@ -85,3 +85,5 @@ if (selectedTracks.some(track => track.id === item.id)) {
         </Polyline>
     );
 }
+
+export default React.memo(TrackMarker);

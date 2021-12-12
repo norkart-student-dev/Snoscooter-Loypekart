@@ -38,7 +38,7 @@ router.post('/login', async (req, res) => {
 });
 
 
-router.post('/logout', async (req, res) => {
+router.get('/logout', async (req, res) => {
   try {
     req.session.loggedIn = false;
     res.status(200).send()

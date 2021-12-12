@@ -2,17 +2,12 @@ import React from 'react';
 import axios from 'axios';
 import './App.css';
 import Map from './components/Map';
-import SideMenu from './components/SideMenu';
-import LoginDialog from './components/LoginDialog';
+import SideMenu from './components/Sidemenu/SideMenu';
 import proj4 from 'proj4';
 import booleanContains from '@turf/boolean-contains';
 
 function App() {
-  const [currentLocation, setCurrentLocation] = React.useState({ lat: 60.0084857, lng: 11.0648648 });
-  const [showLogin, setShowLogin] = React.useState(false);
-  const [currentUser, setCurrentUser] = React.useState("");
   const [drawing, setDrawing] = React.useState(false);
-  const [loggedIn, setLoggedIn] = React.useState(false);
   const [modal, setModal] = React.useState(null)
 
 
@@ -30,27 +25,6 @@ function App() {
       />
     </>
   );
-
-
-
-  // async getTracksSource(){
-  //   try {
-  //     const res = await axios.get('/tracks/source');
-
-  //     let data = res.data;
-  //     console.log(res.data)
-  //     return(data);
-  //   }
-  //   catch(err) {
-  //     console.log(err);
-  //     alert("Det har oppstått et problem og løypedata kan desverre ikke leses av, last inn siden på nytt eller prøv igjen senere.")
-  //     return [];
-  //   }
-  // }
-
-
-
-
 
   function selectTracks(bounds) {
     bounds = {
