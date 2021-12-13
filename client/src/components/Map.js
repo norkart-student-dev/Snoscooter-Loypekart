@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { LayerGroup, MapContainer, TileLayer } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import 'leaflet/dist/leaflet.css';
@@ -11,19 +11,24 @@ import NewPoiDialog from './NewPoiDialog';
 import booleanContains from '@turf/boolean-contains';
 import proj4 from 'proj4';
 import useTracks from '../Hooks/useTracks';
+import TrackDialog from './TrackDialog';
 
 
 function Map({ setModal, onSelectionUpdate, drawing }) {
     const { tracks } = useTracks();
-    const [selectedTracks, setSelectedTracks] = useState();
-    const tracksLayerRef = useRef()
+    const [selectedTracks, setSelectedTracks] = useState([]);
 
+    useEffect(() => {
+        if (!drawing && selectedTracks.length > 0) {
+            setModal(<TrackDialog selectedTracks={selectedTracks} onDone={() => { setSelectedTracks([]); setModal(null) }} />)
+        }
+    }, [drawing])
     function onContextAction(value) {
         setModal(<NewPoiDialog coords={value} onDone={() => setModal(null)} />)
     }
-    console.log("render")
+    console.log("render Map")
 
-    /*function selectTracks(bounds) {
+    const selectTracks = useCallback((bounds) => {
         bounds = {
             type: "Feature",
             geometry: {
@@ -56,11 +61,9 @@ function Map({ setModal, onSelectionUpdate, drawing }) {
             }
         });
         setSelectedTracks(selected)
-    }*/
-    function selectTracks(bounds) {
-        console.log(tracksLayerRef.current)
-    }
+    }, [])
 
+    console.log(selectedTracks)
     return (
         <>
             <MapContainer className='Map' center={[65.43662791576793, 13.401348570518797]} zoom={8} zoomControl={false}>
@@ -73,9 +76,10 @@ function Map({ setModal, onSelectionUpdate, drawing }) {
                 {<ContextMarker onAction={onContextAction} />}
                 {drawing && <PolygonDrawer onUpdate={selectTracks} />}
 
-                <LayerGroup
+                <LayerGroup >
+                    <Tracks setModal={setModal} />
+                </LayerGroup>
 
-                <Tracks ref={tracksLayerRef} setModal={setModal} selectedTracks={selectedTracks} />
             </MapContainer>
         </>
     )

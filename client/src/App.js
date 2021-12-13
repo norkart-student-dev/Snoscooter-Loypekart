@@ -19,46 +19,12 @@ function App() {
         forceReloadDB={forceReloadDB}
       ></SideMenu>
       <Map
-        onSelectionUpdate={selectTracks}
         setModal={setModal}
         drawing={drawing}
       />
     </>
   );
 
-  function selectTracks(bounds) {
-    bounds = {
-      type: "Feature",
-      geometry: {
-        type: "Polygon",
-        coordinates: [bounds]
-      }
-    }
-
-    let selected = []
-    this.state.track_data.forEach(item => {
-      //Projections. proj4 flips the coordinates for some unknown reason. This flips them back.
-      let coordinates = [...item.coordinates]
-      coordinates = coordinates.map((item, index) => (proj4(
-        '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ',
-        '+proj=longlat +datum=WGS84 +no_defs ',
-        item)));
-
-      coordinates = coordinates.map((item, index) => ([item[1], item[0]]))
-      let check = {
-        type: "Feature",
-        geometry: {
-          type: "LineString",
-          coordinates: coordinates
-        }
-      }
-
-      if (booleanContains(bounds, check)) {
-        selected.push(item)
-      }
-    });
-    this.setState({ selectedTracks: selected })
-  }
 
   async function forceReloadDB() {
     if (window.confirm("Trykk ok for å laste inn oppdaterte løypedata, utdaterte løyper vil bli slettet.")) {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import useAuthorization from '../../Hooks/useAuthorization';
-import LoginDialog from '../LoginDialog';
+import LoginDialog from '../LoginDialog/LoginDialog.js';
 import "./Sidemenu.css";
 
 function SideMenu({ setDrawing, forceReloadDB }) {

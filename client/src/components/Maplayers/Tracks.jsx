@@ -16,8 +16,9 @@ function Tracks({ setModal, selectedTracks }) {
         setModal(<TrackDialog onDone={() => setModal(null)} selectedTracks={data} />)
     }, [])
 
+
     console.log("render Tracks")
-    console.log(map)
+
     return (
         <>
             {tracks.isLoading ? null :
@@ -27,6 +28,7 @@ function Tracks({ setModal, selectedTracks }) {
                         item={item}
                         deleteTrack={onDeleteTrack}
                         updateTrack={onUpdateTrack}
+                        selectedTracks={selectedTracks}
                     />
                 ))
             }
