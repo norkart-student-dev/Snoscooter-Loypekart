@@ -138,7 +138,6 @@ router.patch('/split/:id/:coords', getTrack, async (req, res) => {
 
 // Updating one track
 router.patch('/:id', getTrack, async (req, res) => {
-  console.log(req)
   if ((req.body.MIDL_STENGT != null) || (req.body.KOMMENTAR != null)) {
     try {
       const updatedTrack = await db.tracks.update(req.body, {

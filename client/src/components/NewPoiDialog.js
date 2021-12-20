@@ -25,10 +25,10 @@ export default function NewPoiDialog({ coords, onDone, selectedPoi }) {
         setComment(event.target.value)
     }
 
-
     let onConfirm = () => {
         if (selectedPoi) {
             updatePoi.mutate({
+                ...selectedPoi,
                 "name": name,
                 "type": type,
                 "comment": comment,

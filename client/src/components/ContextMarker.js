@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { Popup, useMapEvents } from 'react-leaflet';
-import NewPoiDialog from './NewPoiDialog';
-
 
 function ContextMarker({ onAction }) {
     const [position, setPosition] = useState(null)

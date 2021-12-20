@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { Popup, Marker, useMapEvents } from 'react-leaflet';
 import {
     parkingIcon, restStopIcon, reststopWcIcon, tentIcon,
@@ -7,14 +7,12 @@ import {
 import Icon from './Icon';
 import useAuthorization from '../Hooks/useAuthorization';
 import usePois from '../Hooks/usePois';
-import NewPoiDialog from './NewPoiDialog';
 
 // Returns the relevant marker for the item given 
-export default function PoiMarker({ poi }) {
+export default function PoiMarker({ poi, onUpdatePoi }) {
     const [moving, setMoving] = useState(false);
-    const [showPoiDialog, setShowPoiDialog] = useState(false);
     const popup = React.createRef();
-    const isLoggedIn = useAuthorization();
+    const { isLoggedIn } = useAuthorization();
     const { updatePoi, deletePoi } = usePois();
 
     const closePopup = () => {
@@ -60,9 +58,11 @@ export default function PoiMarker({ poi }) {
     }
 
     let iconString = poi.type;
+    if (!(iconString in iconValues)) {
+        iconString = "Sted"
+    }
     return (
         <>
-            {showPoiDialog ? <NewPoiDialog coords={poi.location.coordinates} onDone={() => setShowPoiDialog(false)} selectedPoi={poi} /> : null}
             <Marker position={poi.location.coordinates} icon={iconValues[iconString]}>
                 <Popup className='PoiInfo' ref={popup}>
 
@@ -75,9 +75,9 @@ export default function PoiMarker({ poi }) {
                         {poi.comment}
                     </p> : null}
 
-                    {isLoggedIn && <button onClick={() => { setShowPoiDialog(true); closePopup(); }}>Endre</button>}
-                    {isLoggedIn && <button onClick={() => { if (window.confirm('Hvis du ønsker å flytte punktet så klikk ok, deretter klikk i kartet der det skal flyttes til. Hvis ikke klikk avbryt')) setMoving(true); closePopup(); }}>Flytt</button>}
-                    {isLoggedIn && <button onClick={() => { if (window.confirm('Er du sikker på at du vil slette dette punktet?')) deletePoi.mutate(poi.id); closePopup(); }}>Slett</button>}
+                    {isLoggedIn.data && <button onClick={() => { onUpdatePoi(poi); closePopup(); }}>Endre</button>}
+                    {isLoggedIn.data && <button onClick={() => { if (window.confirm('Hvis du ønsker å flytte punktet så klikk ok, deretter klikk i kartet der det skal flyttes til. Hvis ikke klikk avbryt')) setMoving(true); closePopup(); }}>Flytt</button>}
+                    {isLoggedIn.data && <button onClick={() => { if (window.confirm('Er du sikker på at du vil slette dette punktet?')) deletePoi.mutate(poi.id); closePopup(); }}>Slett</button>}
 
                 </Popup>
             </Marker>

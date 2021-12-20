@@ -63,6 +63,7 @@ export async function createPoi(data) {
 }
 
 export async function updatePoi(data) {
+    console.log(data)
     const res = await axios.patch('/poi/' + data.id, data);
 }
 

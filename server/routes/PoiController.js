@@ -37,7 +37,6 @@ router.get('/:id', (req, res) => {
 
 // Creating one point of interest
 router.post('/', async (req, res) => {
-  console.log("ASDASDASF")
   const poi = {
     name: req.body.name,
     type: req.body.type,
