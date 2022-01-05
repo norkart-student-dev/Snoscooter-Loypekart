@@ -9,7 +9,6 @@ function SideMenu({ setDrawing, forceReloadDB }) {
     const [showLoginDialog, setShowLoginDialog] = useState(false)
     const { isLoggedIn, logout } = useAuthorization();
 
-    console.log("render sidemenu")
     return (
         <>
             {showLoginDialog ? <LoginDialog onClose={() => setShowLoginDialog(false)} /> : null}

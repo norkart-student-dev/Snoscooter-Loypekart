@@ -2,6 +2,7 @@ import "./ReadPoiFromCSV.css"
 import xlsxParser from "xls-parser";
 import usePois from "../../Hooks/usePois";
 import proj4 from "proj4";
+import kommuner from "../../assets/Kommuner.json"
 
 function ReadPoiFromCSV() {
     const { createPoi } = usePois()
@@ -10,10 +11,32 @@ function ReadPoiFromCSV() {
         xlsxParser.onFileSelection(files[0])
             .then(data => {
                 console.log(data)
-                delete data.poityper
-                Object.values(data).forEach(category => {
-                    category.forEach(item => {
-                        let coords = [parseFloat(item.y), parseFloat(item.x)]
+                let poityper = {};
+                data.poityper.forEach(poitype => {
+                    if (poitype.kode) {
+                        poityper[poitype.kode] = poitype.tekst;
+                    }
+                });
+                delete data.poityper;
+                console.log(poityper)
+
+                for (var category in data) {
+                    let type = poityper[category];
+                    category = data[category];
+
+                    category.forEach(poi => {
+                        let description = { ...poi }
+                        delete description.Navn
+                        delete description.y
+                        delete description.x
+                        let descriptionString = '';
+
+                        for (let property in description) {
+                            descriptionString += property + ":\t" + description[property] + "\n"
+                        }
+
+                        let coords = [parseFloat(poi.y), parseFloat(poi.x)]
+
                         if (!isNaN(coords[0]) && !isNaN(coords[1])) {
                             console.log(coords)
                             coords = proj4(
@@ -25,9 +48,9 @@ function ReadPoiFromCSV() {
                             if (!isNaN(coords[0]) && !isNaN(coords[1])) {
                                 createPoi.mutateAsync({
 
-                                    "name": item.Navn,
-                                    "type": item.type ? item.type : "",
-                                    "comment": item.beskrivelse,
+                                    "name": poi.Navn,
+                                    "type": type,
+                                    "info": descriptionString,
                                     "location": {
                                         "type": "Point",
                                         "coordinates": coords
@@ -36,17 +59,28 @@ function ReadPoiFromCSV() {
                             }
                             else {
                                 console.log("ERROR with Poi creation:")
-                                console.log(item)
+                                console.log(poi)
                             }
 
                         }
                         else {
                             console.log("ERROR with projection:")
-                            console.log(item)
+                            console.log(poi)
                         }
                     })
-                });
+                }
             })
+    }
+
+    function getMunicipalitynumberFromName(name) {
+        let kommune = kommuner.filter((kommune) => name === kommune.kommunenavn || name === kommune.kommunenavnNorsk)
+        console.log(kommune)
+        if (kommune.length < 1) {
+            return null
+        }
+        else {
+            return parseInt(kommune[0].kommunenummer)
+        }
     }
 
     return (

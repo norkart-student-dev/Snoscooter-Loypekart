@@ -1,5 +1,6 @@
 import axios from 'axios';
 import proj4 from 'proj4';
+import { calcCrow } from './utils/geometry';
 
 
 export async function login(data) {
@@ -38,12 +39,13 @@ export async function isLoggedIn() {
 }
 
 // Request a list of all PoI's from the backend
-export async function getPois() {
+export async function getPois({ pageParam = 0 }) {
     try {
-        const res = await axios.get('/poi');
+        const res = await axios.get('/poi?index=' + pageParam);
         return res.data;
     }
     catch (err) {
+        console.log(err)
         alert("Det har oppstått et problem og punktdata kan desverre ikke vises, last inn siden eller prøv igjen senere.")
     }
 }
@@ -72,16 +74,22 @@ export async function deletePoi(id) {
 }
 
 export async function deleteTrack(id) {
+    console.log("deleting track " + id)
     const res = await axios.delete('/tracks/' + id);
+}
+
+export async function bulkDeleteTrack(ids) {
+    const res = await axios.patch('/tracks/bulkdelete', ids)
 }
 
 export async function updateTrack(data) {
     const res = await axios.patch('/tracks/' + data.id, data);
 }
 
-export async function splitTrack(item, coords) {
+export async function splitTrack({ item, coords }) {
     let current = null;
-
+    console.log(item)
+    console.log(coords)
     item.coordinates.forEach(element => {
         let converted = proj4(
             '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ',
@@ -95,10 +103,10 @@ export async function splitTrack(item, coords) {
         convertedCurr = [convertedCurr[1], convertedCurr[0]]
         if (current === null) {
             current = element
-        } else if (this.calcCrow(converted[0], converted[1], coords.lat, coords.lng) < this.calcCrow(convertedCurr[0], convertedCurr[1], coords.lat, coords.lng)) {
+        } else if (calcCrow(converted[0], converted[1], coords.lat, coords.lng) < calcCrow(convertedCurr[0], convertedCurr[1], coords.lat, coords.lng)) {
             current = element
         }
     });
-
+    console.log(current)
     const res = await axios.patch('/tracks/split/' + item.id + '/' + current)
 }

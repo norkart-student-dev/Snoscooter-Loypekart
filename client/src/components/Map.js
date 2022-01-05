@@ -4,7 +4,7 @@ import { LayersControl, MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'react-leaflet-markercluster/dist/styles.min.css';
 import ContextMarker from './ContextMarker';
-import Pois from './Maplayers/Pois';
+import Pois from './Maplayers/PoiLayer';
 import Tracks from './Maplayers/Tracks';
 import PolygonDrawer from './PolygonDrawer';
 import NewPoiDialog from './NewPoiDialog';
@@ -13,10 +13,15 @@ import proj4 from 'proj4';
 import useTracks from '../Hooks/useTracks';
 import TrackDialog from './TrackDialog';
 import useAuthorization from '../Hooks/useAuthorization';
+import kommuner from "../assets/Kommuner.json"
+import PoiLayer from './Maplayers/PoiLayer';
+import usePois from '../Hooks/usePois';
+import MarkerClusterGroup from 'react-leaflet-markercluster';
 
 
 function Map({ setModal, drawing }) {
     const { tracks } = useTracks();
+    const { pois } = usePois();
     const [selectedTracks, setSelectedTracks] = useState([]);
     const [selectedBounds, setSelectedBounds] = useState([]);
     const { isLoggedIn } = useAuthorization();
@@ -26,6 +31,12 @@ function Map({ setModal, drawing }) {
             setModal(<TrackDialog selectedTracks={selectedTracks} onDone={() => { setSelectedTracks([]); setModal(null) }} />)
         }
     }, [drawing])
+
+    useEffect(() => {
+        if (!pois.isFetching && pois.hasNextPage) {
+            setTimeout(() => pois.fetchNextPage({ cancelRefetch: false }), 100)
+        }
+    }, [pois])
 
     useEffect(() => {
         let bounds = {
@@ -109,7 +120,11 @@ function Map({ setModal, drawing }) {
                 {drawing && <PolygonDrawer onUpdate={setSelectedBounds} />}
 
                 <Tracks setModal={setModal} selectedTracks={selectedTracks} />
-                <Pois setModal={setModal} />
+
+                <MarkerClusterGroup>
+                    {pois.isLoading ? null : pois.data.pages.map((page) => <PoiLayer setModal={setModal} pois={page.data} key={page.nextIndex} />)}
+                </MarkerClusterGroup>
+
 
             </MapContainer>
         </>

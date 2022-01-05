@@ -70,9 +70,9 @@ export default function PoiMarker({ poi, onUpdatePoi }) {
                         <b>Navn:</b> {poi.name} <br />
                         <b>Type:</b> {poi.type} <br />
                     </p>
-                    {poi.comment ? <p>
+                    {poi.info ? <p>
                         <b>Informasjon:</b> <br />
-                        {poi.comment}
+                        {poi.info}
                     </p> : null}
 
                     {isLoggedIn.data && <button onClick={() => { onUpdatePoi(poi); closePopup(); }}>Endre</button>}

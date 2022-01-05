@@ -1,22 +1,18 @@
 const express = require('express')
+const { poi } = require('../models')
 const router = express.Router()
 const db = require('../models')
 
 // Getting all points of interest
 router.get('/', async (req, res) => {
-  const title = req.query.title;
-  var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
-
-  db.poi.findAll({ where: condition })
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving points of interest."
-      });
-    });
+  let index = parseInt(req.query.index)
+  let limit = 500;
+  let pois = await db.poi.findAll({ offset: index, limit: limit, })
+  let nextIndex = null;
+  if (pois.length > 0) {
+    nextIndex = index + limit
+  }
+  res.status(200).send({ data: pois, nextIndex: nextIndex })
 })
 
 
@@ -40,7 +36,8 @@ router.post('/', async (req, res) => {
   const poi = {
     name: req.body.name,
     type: req.body.type,
-    comment: req.body.comment,
+    komnr: req.body.komnr,
+    info: req.body.info,
     location: req.body.location
   };
 
@@ -78,6 +75,23 @@ router.patch('/:id', async (req, res) => {
         message: "Error updating Point of Interest with id=" + id
       });
     });
+})
+
+
+router.post('/clear', async (req, res) => {
+  console.log("cake")
+  let kode = req.query.kode;
+
+  if (kode === "slettalle") {
+    poi.destroy({
+      where: {},
+      truncate: true
+    });
+    res.status(200).send()
+  }
+  else {
+    res.status(403).send
+  }
 })
 
 // Deleting one point of interest

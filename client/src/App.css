@@ -80,6 +80,11 @@
   padding: 10px;
 }
 
+.NewPoiDialog-textarea{
+  width: 90%;
+  height: 100px;
+}
+
 .NewPoiDialog-items {
   width: 250px;
   margin: 10px;
@@ -106,6 +111,7 @@
 
 .PoiInfo{
   font-size: small;
+  white-space: pre-wrap;
 }
 
 .divIcon {

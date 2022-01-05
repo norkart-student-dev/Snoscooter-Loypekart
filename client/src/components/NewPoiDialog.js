@@ -4,14 +4,14 @@ import usePois from '../Hooks/usePois';
 export default function NewPoiDialog({ coords, onDone, selectedPoi }) {
     const [name, setName] = useState('');
     const [type, setType] = useState('Parkeringsplass')
-    const [comment, setComment] = useState('')
+    const [info, setInfo] = useState('')
     const { createPoi, updatePoi } = usePois();
 
     useEffect(() => {
         if (selectedPoi) {
             setName(selectedPoi.name)
             setType(selectedPoi.type)
-            setComment(selectedPoi.comment)
+            setInfo(selectedPoi.info)
         }
     }, [selectedPoi])
 
@@ -22,7 +22,7 @@ export default function NewPoiDialog({ coords, onDone, selectedPoi }) {
         setType(event.target.value)
     }
     const commentOnChange = (event) => {
-        setComment(event.target.value)
+        setInfo(event.target.value)
     }
 
     let onConfirm = () => {
@@ -31,13 +31,13 @@ export default function NewPoiDialog({ coords, onDone, selectedPoi }) {
                 ...selectedPoi,
                 "name": name,
                 "type": type,
-                "comment": comment,
+                "info": info,
             })
         } else {
             createPoi.mutate({
                 "name": name,
                 "type": type,
-                "comment": comment,
+                "info": info,
                 "location": {
                     "type": "Point",
                     "coordinates": [coords.lat, coords.lng]
@@ -62,7 +62,7 @@ export default function NewPoiDialog({ coords, onDone, selectedPoi }) {
                         <option value={option} key={option}>{option}</option>
                     ))}
                 </select>
-                <textarea value={comment} onChange={commentOnChange} />
+                <textarea className="NewPoiDialog-textarea" value={info} onChange={commentOnChange} />
                 <button className='NewPoiDialog-button'
                     onClick={onConfirm}>Bekreft</button>
                 <button className='NewPoiDialog-button' onClick={onDone}>Avbryt</button>

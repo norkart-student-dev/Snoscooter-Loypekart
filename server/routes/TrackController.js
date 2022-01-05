@@ -4,6 +4,7 @@ const axios = require('axios')
 const wfs_scooter_url = "http://www.webatlas.no/wms-qms11_vafelt_wfs/?SERVICE=WFS&REQUEST=GetFeature&typeNames=QMS_VA_FELT:SCOOTERLOYPER_1824"
 const output_format = "json" // default to json, also supports GML and XML
 const db = require('../models')
+const { tracks } = require('../models')
 
 async function loadTracks(reloading = false) {
   try {
@@ -90,10 +91,10 @@ router.get('/reload', async (req, res) => {
 
 // Getting all tracks
 router.get('/', async (req, res) => {
+
   try {
     const tracks = await db.tracks.findAll()
     res.status(200).json(tracks)
-
   }
   catch (err) {
     console.log(err)
@@ -136,6 +137,18 @@ router.patch('/split/:id/:coords', getTrack, async (req, res) => {
   }
 })
 
+router.patch('/bulkdelete', async (req, res) => {
+  console.log("deleting: " + req.body)
+  try {
+    tracks.destroy({ where: { id: req.body } })
+    reloadTracks()
+    res.status(200).send();
+  } catch (e) {
+    console.log(e)
+    res.status(500).send()
+  }
+})
+
 // Updating one track
 router.patch('/:id', getTrack, async (req, res) => {
   if ((req.body.MIDL_STENGT != null) || (req.body.KOMMENTAR != null)) {
@@ -169,6 +182,12 @@ router.delete('/:id', getTrack, async (req, res) => {
           SPLITTED: true
         }
       })
+
+      if (tracksToDelete === 0) {
+        await db.tracks.destroy({ where: { id: id } })
+      }
+
+      reloadTracks()
 
       console.log("deleting tracks" + tracksToDelete)
 

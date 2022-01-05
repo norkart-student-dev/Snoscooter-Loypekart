@@ -4,7 +4,7 @@ import proj4 from 'proj4';
 import useAuthorization from '../Hooks/useAuthorization';
 
 // draws the relevant track for the item given 
-function TrackMarker({ item, deleteTrack, updateTrack, selectedTracks }) {
+function TrackMarker({ item, deleteTrack, updateTrack, selectedTracks, splitTrack }) {
     const { isLoggedIn } = useAuthorization();
     const [coordinates, setCoordinates] = useState([]);
     const popup = React.createRef()
@@ -23,8 +23,7 @@ function TrackMarker({ item, deleteTrack, updateTrack, selectedTracks }) {
             item)));
 
         setCoordinates(flippedCoordinates.map((item, index) => ([item[1], item[0]])));
-    }, [])
-
+    }, [item.coordinates])
 
 
     let pathOptions = { color: 'green', weight: 7, smoothFactor: 0.2 }
@@ -53,7 +52,6 @@ function TrackMarker({ item, deleteTrack, updateTrack, selectedTracks }) {
             }
         }
     })
-
     return (
         coordinates.length === 0 ? null : <Polyline className='trackLine' key={item.id} pathOptions={pathOptions} positions={coordinates}>
             <Popup className='trackInfo' id={item.id} ref={popup}>
@@ -75,7 +73,7 @@ function TrackMarker({ item, deleteTrack, updateTrack, selectedTracks }) {
                     closePopup();
                 }}>Endre</button>}
                 {isLoggedIn.data && <button onClick={() => {
-                    //splitTrack(item, coords);
+                    splitTrack(item, popup.current._latlng);
                     closePopup();
                 }}>Del linjen her</button>}
                 {isLoggedIn.data && <button onClick={() => {

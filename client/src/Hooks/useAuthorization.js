@@ -7,7 +7,7 @@ function useAuthorization() {
     return {
         isLoggedIn: useQuery("isLoggedIn", isLoggedIn),
         login: useMutation(login, { onSuccess: () => { queryClient.setQueryData("isLoggedIn", true) } }),
-        logout: useMutation(logout, { onSuccess: () => { queryClient.setQueryData("isLoggedIn", false) } })
+        logout: useMutation(logout, { onSuccess: () => { queryClient.invalidateQueries("isLoggedIn") } })
     }
 }
 

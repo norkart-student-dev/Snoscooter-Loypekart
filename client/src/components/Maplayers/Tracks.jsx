@@ -1,10 +1,10 @@
-import { useCallback } from "react";
+import { useCallback, memo } from "react";
 import useTracks from "../../Hooks/useTracks";
 import TrackDialog from "../TrackDialog";
 import TrackMarker from "../TrackMarker";
 
 function Tracks({ setModal, selectedTracks }) {
-    const { tracks, deleteTrack } = useTracks();
+    const { tracks, deleteTrack, splitTrack } = useTracks();
 
     const onDeleteTrack = useCallback((id) => {
         deleteTrack.mutate(id);
@@ -14,9 +14,12 @@ function Tracks({ setModal, selectedTracks }) {
         setModal(<TrackDialog onDone={() => setModal(null)} selectedTracks={data} />)
     }, [])
 
+    const onSplitTrack = useCallback((item, coords) => {
+        console.log(coords)
+        splitTrack.mutate({ item, coords })
+    }, [])
 
-    console.log("render Tracks")
-    console.log(selectedTracks)
+    console.log("rendering tracks")
 
     return (
         <>
@@ -27,6 +30,7 @@ function Tracks({ setModal, selectedTracks }) {
                         item={item}
                         deleteTrack={onDeleteTrack}
                         updateTrack={onUpdateTrack}
+                        splitTrack={onSplitTrack}
                         selectedTracks={selectedTracks}
                     />
                 ))
@@ -35,4 +39,4 @@ function Tracks({ setModal, selectedTracks }) {
     )
 }
 
-export default Tracks;
+export default memo(Tracks);
