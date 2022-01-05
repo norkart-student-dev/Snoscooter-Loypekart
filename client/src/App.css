@@ -24,20 +24,6 @@
   color: #61dafb;
 }
 
-.SideDiv{
-  position: absolute;
-  display: grid;
-  grid-auto-columns: 1fr 1fr;
-  width: 50px;
-  height: 100px;
-  padding: 5px;
-  z-index: 1001;
-}
-
-.SideDiv button{
-  margin: 5px;
-}
-
 .LoginDialog {
   position: absolute;
   bottom: 0px;
@@ -94,6 +80,11 @@
   padding: 10px;
 }
 
+.NewPoiDialog-textarea{
+  width: 90%;
+  height: 100px;
+}
+
 .NewPoiDialog-items {
   width: 250px;
   margin: 10px;
@@ -120,6 +111,7 @@
 
 .PoiInfo{
   font-size: small;
+  white-space: pre-wrap;
 }
 
 .divIcon {

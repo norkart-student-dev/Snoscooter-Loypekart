@@ -5,8 +5,9 @@ function PolygonDrawer ({onUpdate}){
     const [corners, setCorners] = useState([])
 
     useEffect(() => {
-        const timer = setTimeout(() => onUpdate(corners), 2000);
-        return () => clearTimeout(timer);
+        if(corners.length > 2){
+            onUpdate(corners);
+        }
       }, [corners, onUpdate]);
 
     useMapEvents({

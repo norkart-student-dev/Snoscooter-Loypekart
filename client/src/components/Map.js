@@ -1,72 +1,134 @@
-import React, { useContext } from 'react';
-import { MapContainer, TileLayer } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-markercluster';
+import React, { useEffect, useState } from 'react';
+import { LayersControl, MapContainer, TileLayer } from 'react-leaflet';
+
 import 'leaflet/dist/leaflet.css';
 import 'react-leaflet-markercluster/dist/styles.min.css';
-import ContextMenu from './ContextMenu';
-import UserContext from '../Context';
-import PoiMarker from './PoiMarker';
-import TrackMarker from './TrackMarker';
+import ContextMarker from './ContextMarker';
+import Pois from './Maplayers/PoiLayer';
+import Tracks from './Maplayers/Tracks';
 import PolygonDrawer from './PolygonDrawer';
-
-const RenderMap = React.memo(({createPoi, editPoi, movePoi, deletePoi, poi_data, editTrack, deleteTrack, onSelectionUpdate, track_data, loggedIn, splitTrack, selectedTracks, drawing}) => {
-    return (
-        <MapContainer className='Map' center={[65.43662791576793, 13.401348570518797]} zoom={8} zoomControl={false}>
-
-            <TileLayer
-                attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-
-            {loggedIn && <ContextMenu createPoi={createPoi}/>}
-            {loggedIn && drawing && <PolygonDrawer onUpdate={onSelectionUpdate}/>}
-
-            <MarkerClusterGroup>
-                {poi_data !== undefined && 
-                    poi_data.map((item, index) => (
-                        <PoiMarker 
-                            key={item.id} 
-                            item={item} 
-                            editPoi={editPoi}
-                            movePoi={movePoi}
-                            deletePoi={deletePoi}
-                        />
-                    ))
-                }
-            </MarkerClusterGroup>
+import NewPoiDialog from './NewPoiDialog';
+import booleanContains from '@turf/boolean-contains';
+import proj4 from 'proj4';
+import useTracks from '../Hooks/useTracks';
+import TrackDialog from './TrackDialog';
+import useAuthorization from '../Hooks/useAuthorization';
+import kommuner from "../assets/Kommuner.json"
+import PoiLayer from './Maplayers/PoiLayer';
+import usePois from '../Hooks/usePois';
+import MarkerClusterGroup from 'react-leaflet-markercluster';
 
 
-            {track_data.length !== 0 &&
-                track_data.map((item, index) => (
-                    <TrackMarker
-                        key={item.id}
-                        item={item}
-                        editTrack={editTrack}
-                        splitTrack={splitTrack}
-                        deleteTrack={deleteTrack}
-                        selectedTracks={selectedTracks}
-                    />
-                ))  
+function Map({ setModal, drawing }) {
+    const { tracks } = useTracks();
+    const { pois } = usePois();
+    const [selectedTracks, setSelectedTracks] = useState([]);
+    const [selectedBounds, setSelectedBounds] = useState([]);
+    const { isLoggedIn } = useAuthorization();
+
+    useEffect(() => {
+        if (!drawing && selectedTracks.length > 0) {
+            setModal(<TrackDialog selectedTracks={selectedTracks} onDone={() => { setSelectedTracks([]); setModal(null) }} />)
+        }
+    }, [drawing])
+
+    useEffect(() => {
+        if (!pois.isFetching && pois.hasNextPage) {
+            setTimeout(() => pois.fetchNextPage({ cancelRefetch: false }), 100)
+        }
+    }, [pois])
+
+    useEffect(() => {
+        let bounds = {
+            type: "Feature",
+            geometry: {
+                type: "Polygon",
+                coordinates: [selectedBounds]
             }
-        </MapContainer>
-    )
-});
+        }
 
-export default function Map({createPoi, editPoi, movePoi, deletePoi, poi_data, editTrack, deleteTrack, splitTrack, onSelectionUpdate, track_data, selectedTracks, drawing}) {
-    const user = useContext(UserContext);
-    return <RenderMap
-                createPoi={createPoi}
-                editPoi={editPoi}
-                movePoi={movePoi}
-                deletePoi={deletePoi}
-                poi_data={poi_data}
-                editTrack={editTrack}
-                deleteTrack={deleteTrack}
-                splitTrack={splitTrack}
-                onSelectionUpdate={onSelectionUpdate}
-                track_data={track_data}
-                loggedIn={user.loggedIn}
-                selectedTracks={selectedTracks}
-                drawing={drawing}>
-            </RenderMap>
+        let selected = []
+        if (!tracks.isLoading) {
+            tracks.data.forEach(item => {
+
+                let coordinates = [...item.coordinates]
+                coordinates = coordinates.map((item, index) => (proj4(
+                    '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs ',
+                    '+proj=longlat +datum=WGS84 +no_defs ',
+                    item)));
+
+                //proj4 flips the coordinates for some unknown reason. This flips them back.
+                coordinates = coordinates.map((item, index) => ([item[1], item[0]]))
+                let check = {
+                    type: "Feature",
+                    geometry: {
+                        type: "LineString",
+                        coordinates: coordinates
+                    }
+                }
+
+                if (booleanContains(bounds, check)) {
+                    selected.push(item)
+                }
+            });
+        }
+
+        setSelectedTracks(selected)
+    }, [selectedBounds])
+
+    function onContextAction(value) {
+        setModal(<NewPoiDialog coords={value} onDone={() => setModal(null)} />)
+    }
+
+    return (
+        <>
+            <MapContainer className='Map' center={[65.43662791576793, 13.401348570518797]} zoom={8} zoomControl={false}>
+
+                <LayersControl position="topright">
+                    <LayersControl.BaseLayer checked name="Kart">
+                        <TileLayer
+                            attribution={`&copy; ${new Date().getFullYear()} Norkart AS/OpenStreetMap/EEA CLC2006`}
+                            url={`//waapi.webatlas.no/maptiles/tiles/webatlas-gray-vektor/wa_grid/{z}/{x}/{y}.png?APITOKEN=${"0e5f34a6-1e66-438c-a05b-4d03077ac49f"}`}
+                            mapType="vector"
+                            maxZoom={20}
+                            minZoom={0}
+                        />
+                    </LayersControl.BaseLayer>
+
+                    <LayersControl.BaseLayer name="Foto">
+                        <TileLayer
+                            attribution={`&copy; ${new Date().getFullYear()} Norkart AS/OpenStreetMap/EEA CLC2006`}
+                            url={`//waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?APITOKEN=${"0e5f34a6-1e66-438c-a05b-4d03077ac49f"}`}
+                            mapType="vector"
+                            maxZoom={20}
+                            minZoom={0}
+                        />
+                    </LayersControl.BaseLayer>
+
+                    <LayersControl.BaseLayer name="Hybrid">
+                        <TileLayer
+                            attribution={`&copy; ${new Date().getFullYear()} Norkart AS/OpenStreetMap/EEA CLC2006`}
+                            url={`//waapi.webatlas.no/maptiles/tiles/webatlas-standard-hybrid/wa_grid/{z}/{x}/{y}.jpeg?APITOKEN=${"0e5f34a6-1e66-438c-a05b-4d03077ac49f"}`}
+                            mapType="vector"
+                            maxZoom={20}
+                            minZoom={0}
+                        />
+                    </LayersControl.BaseLayer>
+                </LayersControl>
+
+                {isLoggedIn.data && <ContextMarker onAction={onContextAction} />}
+                {drawing && <PolygonDrawer onUpdate={setSelectedBounds} />}
+
+                <Tracks setModal={setModal} selectedTracks={selectedTracks} />
+
+                <MarkerClusterGroup>
+                    {pois.isLoading ? null : pois.data.pages.map((page) => <PoiLayer setModal={setModal} pois={page.data} key={page.nextIndex} />)}
+                </MarkerClusterGroup>
+
+
+            </MapContainer>
+        </>
+    )
 }
+
+export default Map;
